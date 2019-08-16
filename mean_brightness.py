@@ -6,8 +6,10 @@ Create a dict keyed by unicode characters of the mean brightness of those\
 characters. Useful for creating ascii or unicode gradients for ascii art.
 """
 font = "Noto-Sans-Mono-Regular"
-#Grab a good sample of Unicode characters
-unicodestring = "".join([chr(s) for s in range(32,127)])+"".join([chr(s) for s in range(162,191)])
+#Grab a good sample of Unicode characters - Change the ranges to include 
+#whatever unicode characters you're interested in.
+unicodestring = "".join([chr(s) for s in range(32,127)]) + \
+                "".join([chr(s) for s in range(162,191)])
 
 #Create a png for each character using imagemagick
 for i,character in enumerate(unicodestring):
@@ -15,8 +17,8 @@ for i,character in enumerate(unicodestring):
                     "-font", font, "-pointsize","72",\
                     "label:"+character, f"{i}.png"])
 
-#Measure the mean brightness of each character in the png and save as a dict
-#Brightness is measured with imagemagick
+#Measure the mean brightness of each character in the png and save as a dict.
+#Brightness is measured with imagemagick.
 meanbrightness = {}
 for i, character in enumerate(unicodestring):
     cmd = ["identify", "-format", "\"%[fx:mean]\"", f"{i}.png"]
