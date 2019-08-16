@@ -25,6 +25,5 @@ for i, character in enumerate(unicodestring):
     meanbrightness[character]=subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
 
 brightjson = json.dumps(meanbrightness)
-f = open("meanbrightness.json","w")
-f.write(brightjson)
-f.close()
+with open("meanbrightness.json","w") as f:
+    f.write(brightjson)
