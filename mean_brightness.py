@@ -2,7 +2,7 @@
 import subprocess
 import json
 """
-Create a dict keyed by unicode characters of the mean brightness of those\
+Create a dict keyed by unicode characters of the mean brightness of those
 characters. Useful for creating ascii or unicode gradients for ascii art.
 """
 font = "Noto-Sans-Mono-Regular"
