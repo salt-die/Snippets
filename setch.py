@@ -3,7 +3,7 @@
 Setch is a portmanteau of set and CHoice.
 
 If one finds oneself needing to choose items from sets at random, constantly
-converting those sets to lists can significantly slow down your code.  This
+converting those sets to lists can significantly slow down your program.  This
 class is set-like, but allows one to choose an item at random from it with no
 conversion necessary.
 """
