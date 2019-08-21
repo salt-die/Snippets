@@ -11,3 +11,6 @@ characters
 collection
 
 * CyclicTuple.py is a class that implements cyclic tuples
+
+* setch.py is a class that implements sets with choice -- no need to convert
+your set to a list beforehand
