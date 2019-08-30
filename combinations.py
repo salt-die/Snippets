@@ -23,13 +23,13 @@ import numpy as np
 
 def comb(array, k):
     n = len(array)
-    a = np.ones((k, n-k+1), dtype=int)
-    a[0] = np.arange(n-k+1)
+    a = np.ones((k, n - k + 1), dtype=int)
+    a[0] = np.arange(n - k + 1)
     for i in range(1, k):
-        reps = (n-k+i) - a[i-1]
+        reps = (n - k + i) - a[i - 1]
         a = np.repeat(a, reps, axis=1)
         ind = np.add.accumulate(reps)
-        a[i, ind[:-1]] = 1-reps[1:]
+        a[i, ind[:-1]] = 1 - reps[1:]
         a[i, 0] = i
         a[i] = np.add.accumulate(a[i])
     return array[a.T]
