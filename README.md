@@ -14,3 +14,5 @@ collection
 
 * setch.py is a class that implements sets with choice -- no need to convert
 your set to a list beforehand
+
+* combinations.py is a numpy implementation of itertools.combinations
