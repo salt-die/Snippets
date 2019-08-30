@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Numpy version of itertools.combinations
+Numpy version of itertools.combinations from:
+https://stackoverflow.com/questions/42138681/faster-numpy-solution-instead-of-itertools-combinations
 
 Example:
 >>> arr = np.array(['a', 'b', 'c', 'd', 'e'])
