@@ -33,3 +33,26 @@ def comb(array, k):
         a[i, 0] = i
         a[i] = np.add.accumulate(a[i])
     return array[a.T]
+
+def verbose_comb(array, k):
+    n = len(array)
+    print(f"n = {n}")
+    a = np.ones((k, n - k + 1), dtype=int)
+    print(a)
+    a[0] = np.arange(n - k + 1)
+    print(a)
+    for i in range(1, k):
+        print(f"k = {k}")
+        reps = (n - k + i) - a[i - 1]
+        print(f"reps = {reps}")
+        a = np.repeat(a, reps, axis=1)
+        print(a)
+        ind = np.add.accumulate(reps)
+        print(ind)
+        a[i, ind[:-1]] = 1 - reps[1:]
+        print(a)
+        a[i, 0] = i
+        print(a)
+        a[i] = np.add.accumulate(a[i])
+        print(a)
+    return array[a.T]
