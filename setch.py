@@ -55,8 +55,7 @@ class Setch:
         return result
 
     def __iadd__(self, other):
-        for item in other:
-            self.add(item)
+        self = self + other
         return self
 
     def __sub__(self, other):
@@ -66,15 +65,14 @@ class Setch:
         return result
 
     def __isub__(self, other):
-        for item in other:
-            self.remove(item)
+        self = self - other
         return self
 
     def __eq__(self, other):
-        return set(*self) == set(*other)
+        return set(self.items) == set(other.items)
 
     def __iter__(self):
-        return (item for item in self.items)
+        return iter(self.items)
 
     def __repr__(self):
         return '{' + repr(self.items)[1:-1] + '}'
