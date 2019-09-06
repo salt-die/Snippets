@@ -19,7 +19,6 @@ class Setch:
         for item in items:
             self.add(item)
 
-
     def add(self, item):
         """
         Add an item to Setch.
