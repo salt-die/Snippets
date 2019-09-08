@@ -71,7 +71,7 @@ class Setch:
         return set(self.items) == set(other.items)
 
     def __iter__(self):
-        return iter(self.items)
+        return iter(set(self.items))
 
     def __repr__(self):
         return '{' + repr(self.items)[1:-1] + '}'
