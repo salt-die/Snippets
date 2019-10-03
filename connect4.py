@@ -1,5 +1,5 @@
 """
-Just a tiny text-based connect4 game.
+Just a tiny text-based ConnectFour game.
 """
 
 import numpy as np
@@ -64,7 +64,7 @@ class ConnectFour:
         Returns if a player has won.
         """
         #Look left
-        for row in range(5, -1, -1):  #Bottom rows more likely to have connect4, so start there
+        for row in range(5, -1, -1):  #Bottom rows more likely to have four-in-a-row, so start there
             for column in (0, 1, 2, 3):
                 if (self.board[row, column:column + 4] == self.current_player + 1).all():
                     return True
