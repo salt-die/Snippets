@@ -16,3 +16,5 @@ collection
 your set to a list beforehand
 
 * combinations.py is a numpy implementation of itertools.combinations
+
+* connect4.py is a text-based connect4 game
