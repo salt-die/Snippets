@@ -78,12 +78,12 @@ class ConnectFour:
         #Look up-left
         if any(all(self.board[row - i][column + i] == self.current_player + 1 for i in range(4))
                for row in (5, 4, 3) for column in (0, 1, 2, 3)):
-                    return True
+            return True
 
         #Look up-right:
         if any(all(self.board[row - i][column - i] == self.current_player + 1 for i in range(4))
                for row in (5, 4, 3) for column in (3, 4, 5, 6)):
-                    return True
+            return True
 
         #Other directions taken care of by symmetry
         return False
@@ -96,6 +96,9 @@ class ConnectFour:
         self.board[np.argmax(np.where(column == 0)), self.current_move] = self.current_player + 1
 
     def start(self):
+        """
+        The main game loop.
+        """
         while self.has_valid_moves():
 
             self.current_move = None
