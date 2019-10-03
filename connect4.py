@@ -76,12 +76,12 @@ class ConnectFour:
                     return True
 
         #Look up-left
-        if any(all(self.board[row - i][column + i] == self.current_player + 1 for i in range(4))
+        if any(all(self.board[row - i, column + i] == self.current_player + 1 for i in range(4))
                for row in (5, 4, 3) for column in (0, 1, 2, 3)):
             return True
 
         #Look up-right:
-        if any(all(self.board[row - i][column - i] == self.current_player + 1 for i in range(4))
+        if any(all(self.board[row - i, column - i] == self.current_player + 1 for i in range(4))
                for row in (5, 4, 3) for column in (3, 4, 5, 6)):
             return True
 
