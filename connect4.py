@@ -6,6 +6,9 @@ import numpy as np
 
 
 class ConnectFour:
+    """
+    ConnectFour! The first player to connect four checkers in a row wins!
+    """
     board = np.zeros((6, 7), dtype=int)
     current_move = None
     current_player = 0
@@ -18,12 +21,12 @@ class ConnectFour:
               *("│" + "│".join(" ●○"[value] for value in row) + "│" for row in self.board),
               "╰" + "─┴" * 6 + "─╯", sep="\n")
 
-    def is_move_valid(self, move, auto=False):
+    def is_move_valid(self, move, automatic=False):
         """
-        Returns True if a user's input is a valid move, or 'q'.
+        Returns True if a user's input is a valid move or 'q'.
 
-        auto parameter is so we don't spam players with error messages when
-        checking if there are any valid moves left.
+        'automatic' parameter is so we don't spam players with error messages when checking
+        if there are any valid moves left.
         """
         if move is None:
             return False
@@ -46,7 +49,7 @@ class ConnectFour:
             self.current_move = move - 1
             return True
 
-        if not auto:
+        if not automatic:
             print("No moves possible in that column!")
         return False
 
@@ -54,7 +57,7 @@ class ConnectFour:
         """
         Returns True if there are still moves left to make in the game.
         """
-        return any(self.is_move_valid(i, auto=True) for i in range(1, 8))
+        return any(self.is_move_valid(i, True) for i in range(1, 8))
 
     def is_connect_four(self):
         """
@@ -74,12 +77,12 @@ class ConnectFour:
 
         #Look up-left
         if any(all(self.board[row - i][column + i] == self.current_player + 1 for i in range(4))
-               for row in (5, 4 ,3) for column in (0, 1, 2, 3)):
+               for row in (5, 4, 3) for column in (0, 1, 2, 3)):
                     return True
 
         #Look up-right:
         if any(all(self.board[row - i][column - i] == self.current_player + 1 for i in range(4))
-               for row in (5, 4 ,3) for column in (3, 4, 5, 6)):
+               for row in (5, 4, 3) for column in (3, 4, 5, 6)):
                     return True
 
         #Other directions taken care of by symmetry
@@ -92,19 +95,16 @@ class ConnectFour:
         column = self.board[:, self.current_move]
         self.board[np.argmax(np.where(column == 0)), self.current_move] = self.current_player + 1
 
-    def user_input(self):
-        self.current_move = input((f"{'●○'[self.current_player]}'s move, "
-                                   "please enter column number or 'q' to quit: ")).lower()
-
     def start(self):
         while self.has_valid_moves():
+
             self.current_move = None
 
             self.print_board()
 
             while not self.is_move_valid(self.current_move):
-                self.user_input()
-
+                self.current_move = input((f"{'●○'[self.current_player]}'s move, "
+                                           "please enter column number or 'q' to quit: ")).lower()
             if self.current_move == "q":
                 break
 
@@ -112,13 +112,14 @@ class ConnectFour:
 
             if self.is_connect_four():
                 self.print_board()
-                print("●○"[self.current_player] + " wins!")
+                print(f"{'●○'[self.current_player]} wins!")
                 break
-            else:
-                self.current_player = not self.current_player
+
+            self.current_player = not self.current_player
+
         else:
             self.print_board()
-            print("Game is a draw!")
+            print("It's a draw!")
 
 if __name__ == "__main__":
     ConnectFour().start()
