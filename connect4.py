@@ -7,12 +7,13 @@ import numpy as np
 def translate(character):
     """
     Our board will be an array of the integer 0, 1, 2.  This function will
-    translate those integers into " ", "X", "O" for our print_board function.
+    translate those integers into " ", "●", "○" respectively for our
+    print_board function.
     """
     if character == 1:
-        return "X"
+        return "●"
     if character == 2:
-        return "O"
+        return "○"
     return " "
 
 
@@ -25,9 +26,11 @@ class Game:
         """
         Print our current board state.
         """
-        print(*("|" + "|".join(translate(character)
-                               for character in row) + "|"
-                         for row in self.board), sep="\n")
+        print("╷" + "╷".join("1234567") + "╷",
+              *("│" + "│".join(translate(character)
+                               for character in row) + "│"
+                         for row in self.board),
+              "╰" + "─┴" * 6 + "─╯", sep="\n")
 
     def is_move_valid(self, move, auto=False):
         """
@@ -101,7 +104,7 @@ class Game:
         self.board[np.argmax(np.where(column == 0)), self.current_move] = self.current_player + 1
 
     def user_input(self):
-        self.current_move = input("Please enter column number or 'q' to quit: ").lower()
+        self.current_move = input("●○"[self.current_player] + "'s move, please enter column number or 'q' to quit: ").lower()
 
     def start(self):
         while self.has_valid_moves():
@@ -119,7 +122,7 @@ class Game:
 
             if self.is_connect_four():
                 self.print_board()
-                print("XO"[self.current_player] + " wins!")
+                print("●○"[self.current_player] + " wins!")
                 break
             else:
                 self.current_player = not self.current_player
