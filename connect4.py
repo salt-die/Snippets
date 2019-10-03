@@ -4,20 +4,8 @@ Just a tiny text-based connect4 game.
 
 import numpy as np
 
-def translate(character):
-    """
-    Our board will be an array of the integer 0, 1, 2.  This function will
-    translate those integers into " ", "●", "○" respectively for our
-    print_board function.
-    """
-    if character == 1:
-        return "●"
-    if character == 2:
-        return "○"
-    return " "
 
-
-class Game:
+class ConnectFour:
     board = np.zeros((6, 7), dtype=int)
     current_move = None
     current_player = 0
@@ -26,10 +14,8 @@ class Game:
         """
         Print our current board state.
         """
-        print("╷" + "╷".join("1234567") + "╷",
-              *("│" + "│".join(translate(character)
-                               for character in row) + "│"
-                         for row in self.board),
+        print("", "╷" + "╷".join("1234567") + "╷",
+              *("│" + "│".join(" ●○"[value] for value in row) + "│" for row in self.board),
               "╰" + "─┴" * 6 + "─╯", sep="\n")
 
     def is_move_valid(self, move, auto=False):
@@ -41,11 +27,13 @@ class Game:
         """
         if move is None:
             return False
+
         if move == 'q':
             return True
+
         try:
             move = int(move)
-        except:
+        except ValueError:
             print("Please input an integer!")
             return False
 
@@ -53,7 +41,7 @@ class Game:
             print("Please choose a column between 1 and 7 (inclusive)!")
             return False
 
-        #Check that a move is possible in given row.
+        #Check that a move is possible in given column.
         if not self.board[:, move - 1].all():
             self.current_move = move - 1
             return True
@@ -82,13 +70,11 @@ class Game:
         for row in (5, 4, 3):
             for column in range(7):
                 if (self.board[row - 3:row + 1, column] == self.current_player + 1).all():
-                    print("1")
                     return True
 
         #Look up-left
         if any(all(self.board[row - i][column + i] == self.current_player + 1 for i in range(4))
                for row in (5, 4 ,3) for column in (0, 1, 2, 3)):
-                    print("2")
                     return True
 
         #Look up-right:
@@ -100,11 +86,15 @@ class Game:
         return False
 
     def update_board(self):
+        """
+        Add a checker at the lowest position possible in a column.
+        """
         column = self.board[:, self.current_move]
         self.board[np.argmax(np.where(column == 0)), self.current_move] = self.current_player + 1
 
     def user_input(self):
-        self.current_move = input("●○"[self.current_player] + "'s move, please enter column number or 'q' to quit: ").lower()
+        self.current_move = input((f"{'●○'[self.current_player]}'s move, "
+                                   "please enter column number or 'q' to quit: ")).lower()
 
     def start(self):
         while self.has_valid_moves():
@@ -131,4 +121,4 @@ class Game:
             print("Game is a draw!")
 
 if __name__ == "__main__":
-    Game().start()
+    ConnectFour().start()
