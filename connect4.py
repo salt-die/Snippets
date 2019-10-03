@@ -32,6 +32,9 @@ class Game:
     def is_move_valid(self, move, auto=False):
         """
         Returns True if a user's input is a valid move, or 'q'.
+
+        auto parameter is so we don't spam players with error messages when
+        checking if there are any valid moves left.
         """
         if move is None:
             return False
@@ -67,7 +70,7 @@ class Game:
         Returns if a player has won.
         """
         #Look left
-        for row in range(5, -1, -1):
+        for row in range(5, -1, -1):  #Bottom rows more likely to have connect4, so start there
             for column in (0, 1, 2, 3):
                 if (self.board[row, column:column + 4] == self.current_player + 1).all():
                     return True
