@@ -51,7 +51,6 @@ class ConnectFour:
         if not self.board[:, move - 1].all():
             self.current_move = move - 1
             return True
-
         if not automatic:
             print("No moves possible in that column!")
         return False
