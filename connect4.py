@@ -63,7 +63,7 @@ class ConnectFour:
 
     def is_connect_four(self):
         """
-        Returns if a player has won.
+        Returns True if a player has won.
         """
         #Look right
         #Bottom rows more likely to have four-in-a-row, so start there
