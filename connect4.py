@@ -67,16 +67,15 @@ class ConnectFour:
         Returns if a player has won.
         """
         #Look right
-        for row in range(5, -1, -1):  #Bottom rows more likely to have four-in-a-row, so start there
-            for column in (0, 1, 2, 3):
-                if (self.board[row, column:column + 4] == self.current_player + 1).all():
-                    return True
+        #Bottom rows more likely to have four-in-a-row, so start there
+        if any((self.board[row, column:column + 4] == self.current_player + 1).all()
+               for row in range(5, -1, -1) for column in (0, 1, 2, 3)):
+            return True
 
         #Look up
-        for row in (5, 4, 3):
-            for column in range(7):
-                if (self.board[row - 3:row + 1, column] == self.current_player + 1).all():
-                    return True
+        if any((self.board[row - 3:row + 1, column] == self.current_player + 1).all()
+               for row in (5, 4, 3) for column in range(7)):
+            return True
 
         #Look up-right
         if any(all(self.board[row - i, column + i] == self.current_player + 1 for i in range(4))
