@@ -21,15 +21,18 @@ class ConnectFour:
               *("│" + "│".join(" ●○"[value] for value in row) + "│" for row in self.board),
               "╰" + "─┴" * 6 + "─╯", sep="\n")
 
-    def is_move_valid(self, move, automatic=False):
+    def is_move_valid(self, move=None, automatic=False):
         """
-        Returns True if a user's input is a valid move or 'q'.
+        Returns True if move is a valid move or 'q'.
 
         'automatic' parameter is so we don't spam players with error messages when checking
         if there are any valid moves left.
         """
+        #"Default" value for move is self.current_move
         if move is None:
-            return False
+            if self.current_move is None:
+                return False
+            move = self.current_move
 
         if move == 'q':
             return True
@@ -57,7 +60,7 @@ class ConnectFour:
         """
         Returns True if there are still moves left to make in the game.
         """
-        return any(self.is_move_valid(i, True) for i in range(1, 8))
+        return any(self.is_move_valid(move, True) for move in range(1, 8))
 
     def is_connect_four(self):
         """
@@ -105,7 +108,7 @@ class ConnectFour:
 
             self.print_board()
 
-            while not self.is_move_valid(self.current_move):
+            while not self.is_move_valid():
                 self.current_move = input((f"{'●○'[self.current_player]}'s move, "
                                            "please enter column number or 'q' to quit: ")).lower()
             if self.current_move == "q":
