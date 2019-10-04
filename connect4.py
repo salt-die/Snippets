@@ -90,20 +90,20 @@ class ConnectFour:
             if (self.board[row:row + 4, column] == self.current_player + 1).all():
                 return True
 
-        def diagonal_check(y_step, x_step):
+        def diagonal(y_step, x_step):
             return all(self.board[row + y_step * i, column + x_step * i] == self.current_player + 1
                        for i in range(4))
 
-        if LOOK_UP and LOOK_RIGHT and diagonal_check(-1, 1):
+        if LOOK_UP and LOOK_RIGHT and diagonal(-1, 1):
             return True
 
-        if LOOK_UP and LOOK_LEFT and diagonal_check(-1, -1):
+        if LOOK_UP and LOOK_LEFT and diagonal(-1, -1):
             return True
 
-        if LOOK_DOWN and LOOK_RIGHT and diagonal_check(1, 1):
+        if LOOK_DOWN and LOOK_RIGHT and diagonal(1, 1):
             return True
 
-        if LOOK_DOWN and LOOK_RIGHT and diagonal_check(1, -1):
+        if LOOK_DOWN and LOOK_RIGHT and diagonal(1, -1):
             return True
 
         return False
@@ -115,7 +115,6 @@ class ConnectFour:
         self.checkers_in_column[self.current_move] += 1
         self.board[HEIGHT - self.checkers_in_column[self.current_move],
                    self.current_move] = self.current_player + 1
-
 
     def start(self):
         """
