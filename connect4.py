@@ -3,7 +3,6 @@ Just a tiny text-based ConnectFour game.
 """
 
 import os
-from itertools import product
 import numpy as np
 
 TERMSIZE = os.get_terminal_size().columns
@@ -78,7 +77,7 @@ class ConnectFour:
 
         # Look Down
         if row + 4 <= HEIGHT and (self.board[row:row + 4, column] == player).all():
-                return True
+            return True
 
         # Look Right
         for x in (column - i for i in range(3) if column - i >= 0):
