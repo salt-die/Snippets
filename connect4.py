@@ -72,45 +72,50 @@ class ConnectFour:
         Returns True if a player has won.
         """
         # Location of our last checker
-        y_loc, x_loc = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
+        row, column = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
 
         player = self.current_player + 1
 
-        #Look Down
-        if y_loc + 4 <= HEIGHT and (self.board[y_loc:y_loc + 4, x_loc] == player).all():
+        # Look Down
+        if row + 4 <= HEIGHT and (self.board[row:row + 4, column] == player).all():
                 return True
 
-        # Loop runs checks for cells close to y_loc, x_loc in case we connect four in the middle
-        for row, column in product(range(min(y_loc + 2, HEIGHT - 1), max(y_loc - 3, -1), -1),
-                                   range(max(x_loc - 2, 0), min(x_loc + 3, WIDTH))):
-            if self.board[row, column] != player:
-                continue
-
-            LOOK_RIGHT = column + 4 <= WIDTH
-            LOOK_LEFT = column - 3 >= 0
-            LOOK_UP = row - 3 >= 0
-            LOOK_DOWN = row + 4 <= HEIGHT
-
-            if LOOK_RIGHT and (self.board[row, column:column + 4] == player).all():
+        # Look Right
+        for x in (column - i for i in range(3) if column - i >= 0):
+            if x + 4 <= WIDTH and (self.board[row, x:x + 4] == player).all():
                 return True
 
-            if LOOK_LEFT and (self.board[row, column - 3:column + 1] == player).all():
+        # Look Left
+        for x in (column + i for i in range(3) if column + i <= WIDTH):
+            if x - 3 >= 0 and (self.board[row, x - 3:x + 1] == player).all():
                 return True
 
-            def diagonal(y_step, x_step):
-                return all(self.board[row + y_step * i, column + x_step * i] == player
-                           for i in range(4))
+        def diagonal(y, x, y_step, x_step):
+            return all(self.board[y + y_step * i, x + x_step * i] == player
+                       for i in range(4))
 
-            if LOOK_UP and LOOK_RIGHT and diagonal(-1, 1):
+        # Look up-right
+        for y, x in ((row + i, column - i) for i in range(3)
+                     if row + i < HEIGHT and column - i >= 0):
+            if y - 3 >= 0 and x + 4 <= WIDTH and diagonal(y, x, -1, 1):
                 return True
 
-            if LOOK_UP and LOOK_LEFT and diagonal(-1, -1):
+        # Look up-left
+        for y, x in ((row + i, column + i) for i in range(3)
+                     if row + i < HEIGHT and column + i < WIDTH):
+            if y - 3 >= 0 and x - 3 >= 0 and diagonal(y, x, -1, -1):
                 return True
 
-            if LOOK_DOWN and LOOK_RIGHT and diagonal(1, 1):
+        # Look down-right
+        for y, x in ((row - i, column - i) for i in range(3)
+                     if row - i >= 0 and column - i >= 0):
+            if y + 4 <= HEIGHT and x + 4 <= WIDTH and diagonal(y, x, 1, 1):
                 return True
 
-            if LOOK_DOWN and LOOK_RIGHT and diagonal(1, -1):
+        # Look down-left
+        for y, x in ((row - i, column + i) for i in range(3)
+                     if row - i >= 0 and column + i < WIDTH):
+            if y + 4 <= HEIGHT and x - 3 >= 0 and diagonal(y, x, 1, -1):
                 return True
 
         return False
