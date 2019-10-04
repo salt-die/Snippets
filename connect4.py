@@ -73,28 +73,46 @@ class ConnectFour:
         """
         Returns True if a player has won.
         """
-        # Look right
-        # Bottom rows more likely to have four-in-a-row, so start there
-        if any((self.board[row, column:column + 4] == self.current_player + 1).all()
-               for row in range(5, -1, -1) for column in (0, 1, 2, 3)):
-            return True
+        # Location of our last move
+        row, column = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
 
-        # Look up
-        if any((self.board[row - 3:row + 1, column] == self.current_player + 1).all()
-               for row in (5, 4, 3) for column in range(7)):
-            return True
+        # Look right
+        if column + 4 <= WIDTH:
+            if (self.board[row, column:column + 4] == self.current_player + 1).all():
+                return True
+
+        #Look left
+        if column - 3 >= 0:
+            if (self.board[row, column - 3:column + 1] == self.current_player + 1).all():
+                return True
+
+        # Look down
+        if row + 4 <= HEIGHT:
+            if (self.board[row:row + 4, column] == self.current_player + 1).all():
+                return True
+
+        # We don't look up -- how would one place a checker at the bottom of a 4-in-a-row?
 
         # Look up-right
-        if any(all(self.board[row - i, column + i] == self.current_player + 1 for i in range(4))
-               for row in (5, 4, 3) for column in (0, 1, 2, 3)):
-            return True
+        if row - 3 >= 0 and column + 4 <= WIDTH:
+            if all(self.board[row - i, column + i] == self.current_player + 1 for i in range(4)):
+                   return True
 
         # Look up-left:
-        if any(all(self.board[row - i, column - i] == self.current_player + 1 for i in range(4))
-               for row in (5, 4, 3) for column in (3, 4, 5, 6)):
-            return True
+        if row - 3 >= 0 and column - 3 >= 0:
+            if all(self.board[row - i, column - i] == self.current_player + 1 for i in range(4)):
+                   return True
 
-        # Other directions taken care of by symmetry
+        # Look down-right
+        if row + 4 <= HEIGHT and column + 4 <= WIDTH:
+            if all(self.board[row + i, column + i] == self.current_player + 1 for i in range(4)):
+                return True
+
+        # Look down-left
+        if row + 4 <= HEIGHT and column - 3 >= 0:
+            if all(self.board[row + i, column - i] == self.current_player + 1 for i in range(4)):
+                return True
+
         return False
 
     def update_board(self):
