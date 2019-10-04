@@ -28,7 +28,7 @@ class ConnectFour:
         print(*self.center(header, *gutter, footer), sep="\n")
 
     @staticmethod
-    def center(self, *lines):
+    def center(*lines):
         for line in lines:
             yield line.center(TERMSIZE)
 
