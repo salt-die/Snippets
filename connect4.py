@@ -39,10 +39,7 @@ class ConnectFour:
 
     def is_move_valid(self):
         """
-        Returns True if move is a valid move or 'q'.
-
-        'automatic' parameter is so we don't spam players with error messages when checking
-        if there are any valid moves left.
+        Returns True if self.current_move is a valid move or 'q'.
         """
 
         if self.current_move is None:
