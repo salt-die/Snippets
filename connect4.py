@@ -81,8 +81,9 @@ class ConnectFour:
                 return True
 
         # Loop runs checks for cells close to y_loc, x_loc in case we connect four in the middle
-        for row, column in product(range(y_loc + 2, y_loc - 3, -1), range(x_loc - 2, x_loc + 3)):
-            if not 0 <= row < HEIGHT or not 0 <= column < WIDTH or not self.board[row, column]:
+        for row, column in product(range(min(y_loc + 2, HEIGHT - 1), max(y_loc - 3, -1), -1),
+                                   range(max(x_loc - 2, 0), min(x_loc + 3, WIDTH))):
+            if self.board[row, column] != player:
                 continue
             LOOK_RIGHT = column + 4 <= WIDTH
             LOOK_LEFT = column - 3 >= 0
