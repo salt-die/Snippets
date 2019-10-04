@@ -3,6 +3,7 @@ Just a tiny text-based ConnectFour game.
 """
 
 import os
+from itertools import product
 import numpy as np
 
 TERMSIZE = os.get_terminal_size().columns
@@ -70,40 +71,45 @@ class ConnectFour:
         """
         Returns True if a player has won.
         """
-        # Location of our last move
-        row, column = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
+        # Location of our last checker
+        y_loc, x_loc = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
 
         player = self.current_player + 1
 
-        LOOK_RIGHT = column + 4 <= WIDTH
-        LOOK_LEFT = column - 3 >= 0
-        LOOK_UP = row - 3 >= 0
-        LOOK_DOWN = row + 4 <= HEIGHT
+        #Look Down
+        if y_loc + 4 <= HEIGHT and (self.board[y_loc:y_loc + 4, x_loc] == player).all():
+                return True
 
-        if LOOK_RIGHT and (self.board[row, column:column + 4] == player).all():
-            return True
+        # Loop runs checks for cells close to y_loc, x_loc in case we connect four in the middle
+        for row, column in product(range(y_loc + 2, y_loc - 3, -1), range(x_loc - 2, x_loc + 3)):
+            if not 0 <= row < HEIGHT or not 0 <= column < WIDTH or not self.board[row, column]:
+                continue
+            LOOK_RIGHT = column + 4 <= WIDTH
+            LOOK_LEFT = column - 3 >= 0
+            LOOK_UP = row - 3 >= 0
+            LOOK_DOWN = row + 4 <= HEIGHT
 
-        if LOOK_LEFT and (self.board[row, column - 3:column + 1] == player).all():
-            return True
+            if LOOK_RIGHT and (self.board[row, column:column + 4] == player).all():
+                return True
 
-        if LOOK_DOWN and (self.board[row:row + 4, column] == player).all():
-            return True
+            if LOOK_LEFT and (self.board[row, column - 3:column + 1] == player).all():
+                return True
 
-        def diagonal(y_step, x_step):
-            return all(self.board[row + y_step * i, column + x_step * i] == player
-                       for i in range(4))
+            def diagonal(y_step, x_step):
+                return all(self.board[row + y_step * i, column + x_step * i] == player
+                           for i in range(4))
 
-        if LOOK_UP and LOOK_RIGHT and diagonal(-1, 1):
-            return True
+            if LOOK_UP and LOOK_RIGHT and diagonal(-1, 1):
+                return True
 
-        if LOOK_UP and LOOK_LEFT and diagonal(-1, -1):
-            return True
+            if LOOK_UP and LOOK_LEFT and diagonal(-1, -1):
+                return True
 
-        if LOOK_DOWN and LOOK_RIGHT and diagonal(1, 1):
-            return True
+            if LOOK_DOWN and LOOK_RIGHT and diagonal(1, 1):
+                return True
 
-        if LOOK_DOWN and LOOK_RIGHT and diagonal(1, -1):
-            return True
+            if LOOK_DOWN and LOOK_RIGHT and diagonal(1, -1):
+                return True
 
         return False
 
