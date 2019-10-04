@@ -6,16 +6,17 @@ import os
 import numpy as np
 
 TERMSIZE = os.get_terminal_size().columns
-
+HEIGHT = 6
+WIDTH = 7
 
 class ConnectFour:
     """
     ConnectFour! The first player to connect four checkers in a row wins!
     """
-    board = np.zeros((6, 7), dtype=int)
+    board = np.zeros((HEIGHT, WIDTH), dtype=int)
     current_move = None
     current_player = 0
-    checkers_in_column = [0] * 7
+    checkers_in_column = [0] * WIDTH
 
     def print_board(self):
         """
@@ -23,7 +24,7 @@ class ConnectFour:
         """
         os.system("clear || cls")  # Clears the terminal
 
-        header = f"╷{'╷'.join('1234567')}╷"
+        header = f"╷{'╷'.join('1234567')}╷"  # TODO rewrite for variable length
         gutter = (f"│{'│'.join(' ●○'[value] for value in row)}│" for row in self.board)
         footer = f"╰{'─┴' * 6}─╯"
         print(*self.center(header, *gutter, footer), sep="\n")
@@ -57,14 +58,16 @@ class ConnectFour:
             self.print_line("Please input an integer!")
             return False
 
-        if not 0 <= self.current_move <= 6:
+        if not 0 <= self.current_move < WIDTH:
             self.print_line("Please choose a column between 1 and 7 (inclusive)!")
             return False
 
         # Check that a move is possible in given column.
-        if self.checkers_in_column[self.current_move] < 6:
+        if self.checkers_in_column[self.current_move] < HEIGHT:
+            self.checkers_in_column[self.current_move] += 1
             return True
 
+        self.print_line("No moves possible in that column!")
         return False
 
     def is_connect_four(self):
@@ -99,14 +102,15 @@ class ConnectFour:
         """
         Add a checker at the lowest position possible in a column.
         """
-        self.board[self.checkers_in_column[self.current_move], self.current_move] = self.current_player + 1
-        self.checkers_in_column[self.current_move] += 1
+        self.board[HEIGHT - self.checkers_in_column[self.current_move],
+                   self.current_move] = self.current_player + 1
+
 
     def start(self):
         """
         The main game loop.
         """
-        for _ in range(42):
+        for _ in range(WIDTH * HEIGHT):
 
             self.current_move = None
 
