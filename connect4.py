@@ -15,6 +15,7 @@ class ConnectFour:
     board = np.zeros((6, 7), dtype=int)
     current_move = None
     current_player = 0
+    number_of_checkers_in_column = [0] * 7
 
     def print_board(self):
         """
@@ -35,45 +36,37 @@ class ConnectFour:
     def print_line(self, line):
         print(*self.center(line))
 
-    def is_move_valid(self, move=None, automatic=False):
+    def is_move_valid(self):
         """
         Returns True if move is a valid move or 'q'.
 
         'automatic' parameter is so we don't spam players with error messages when checking
         if there are any valid moves left.
         """
-        # "Default" value for move is self.current_move
-        if move is None:
-            if self.current_move is None:
-                return False
-            move = self.current_move
 
-        if move == 'q':
+        if self.current_move is None:
+            return False
+
+        if self.current_move == 'q':
             return True
 
         try:
-            move = int(move)
+            self.current_move = int(self.current_move)
+            self.current_move -= 1
         except ValueError:
             self.print_line("Please input an integer!")
             return False
 
-        if not 0 < move < 8:
+        if not 0 <= self.current_move <= 6:
             self.print_line("Please choose a column between 1 and 7 (inclusive)!")
             return False
 
         # Check that a move is possible in given column.
-        if not self.board[:, move - 1].all():
-            self.current_move = move - 1
+        if self.number_of_checkers_in_column[self.current_move] < 6:
+            self.number_of_checkers_in_column[self.current_move] += 1
             return True
-        if not automatic:
-            self.print_line("No moves possible in that column!")
-        return False
 
-    def has_valid_moves(self):
-        """
-        Returns True if there are still moves left to make in the game.
-        """
-        return any(self.is_move_valid(move, True) for move in range(1, 8))
+        return False
 
     def is_connect_four(self):
         """
@@ -114,7 +107,7 @@ class ConnectFour:
         """
         The main game loop.
         """
-        while self.has_valid_moves():
+        for _ in range(42):
 
             self.current_move = None
 
@@ -138,7 +131,7 @@ class ConnectFour:
 
         else:
             self.print_board()
-            print("It's a draw!")
+            self.print_line("It's a draw!")
 
 
 if __name__ == "__main__":
