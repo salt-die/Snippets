@@ -73,25 +73,24 @@ class ConnectFour:
         # Location of our last move
         row, column = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
 
+        player = self.current_player + 1
+
         LOOK_RIGHT = column + 4 <= WIDTH
         LOOK_LEFT = column - 3 >= 0
         LOOK_UP = row - 3 >= 0
         LOOK_DOWN = row + 4 <= HEIGHT
 
-        if LOOK_RIGHT:
-            if (self.board[row, column:column + 4] == self.current_player + 1).all():
-                return True
+        if LOOK_RIGHT and (self.board[row, column:column + 4] == player).all():
+            return True
 
-        if LOOK_LEFT:
-            if (self.board[row, column - 3:column + 1] == self.current_player + 1).all():
-                return True
+        if LOOK_LEFT and (self.board[row, column - 3:column + 1] == player).all():
+            return True
 
-        if LOOK_DOWN:
-            if (self.board[row:row + 4, column] == self.current_player + 1).all():
-                return True
+        if LOOK_DOWN and (self.board[row:row + 4, column] == player).all():
+            return True
 
         def diagonal(y_step, x_step):
-            return all(self.board[row + y_step * i, column + x_step * i] == self.current_player + 1
+            return all(self.board[row + y_step * i, column + x_step * i] == player
                        for i in range(4))
 
         if LOOK_UP and LOOK_RIGHT and diagonal(-1, 1):
