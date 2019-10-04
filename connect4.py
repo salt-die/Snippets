@@ -22,16 +22,18 @@ def print_line(line):
     """
     print(*center(line))
 
+
 class ConnectFour:
     """
     ConnectFour! The first player to connect four checkers in a row wins!
     """
+    current_move = None
+    current_player = 0
+
     def __init__(self, height=6, width=7):
         self.height, self.width = height, width
         self.labels = "1234567890abcdefghijklmnoprstuvwxyz"[:width]
         self.board = np.zeros((height, width), dtype=int)
-        self.current_move = None
-        self.current_player = 0
         self.checkers_in_column = [0] * width
 
     def print_board(self):
