@@ -156,7 +156,7 @@ class ConnectFour:
             self.print_board()
 
             while not self.is_move_valid():
-                print_line(f"{'●○'[self.current_player]}'s move,"
+                print_line(f"{'●○'[self.current_player]}'s move, "
                            "enter column or 'q' to quit:\n")
                 self.current_move = input("".center(TERMX // 2)).lower()
 
