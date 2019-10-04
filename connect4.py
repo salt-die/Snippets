@@ -55,7 +55,7 @@ class ConnectFour:
             self.board[row, self.current_move] = self.current_player + 1
             self.print_board()
             self.board[row, self.current_move] = 0
-            time.sleep(.2)
+            time.sleep(.08)
 
     def is_move_valid(self):
         """
