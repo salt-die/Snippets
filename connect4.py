@@ -93,16 +93,16 @@ class ConnectFour:
         player = self.current_player + 1
 
         # Look Down
-        if row + 4 <= self.height and (self.board[row:row + 4, column] == player).all():
+        if row + 3 < self.height and (self.board[row:row + 4, column] == player).all():
             return True
 
         # Look Right
         for x in (column - i for i in range(3) if column - i >= 0):
-            if x + 4 <= self.width and (self.board[row, x:x + 4] == player).all():
+            if x + 3 < self.width and (self.board[row, x:x + 4] == player).all():
                 return True
 
         # Look Left
-        for x in (column + i for i in range(3) if column + i <= self.width):
+        for x in (column + i for i in range(3) if column + i < self.width):
             if x - 3 >= 0 and (self.board[row, x - 3:x + 1] == player).all():
                 return True
 
