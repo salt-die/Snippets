@@ -85,6 +85,7 @@ class ConnectFour:
                                    range(max(x_loc - 2, 0), min(x_loc + 3, WIDTH))):
             if self.board[row, column] != player:
                 continue
+
             LOOK_RIGHT = column + 4 <= WIDTH
             LOOK_LEFT = column - 3 >= 0
             LOOK_UP = row - 3 >= 0
