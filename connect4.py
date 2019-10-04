@@ -7,7 +7,7 @@ import time
 from itertools import product
 import numpy as np
 
-TERMSIZE = os.get_terminal_size().COLUMNS
+TERMSIZE = os.get_terminal_size().columns
 
 def center(*lines):
     """
