@@ -162,7 +162,7 @@ class ConnectFour:
 
 if __name__ == "__main__":
     try:
-        width = int(input("Number of columns: "))
+        width = int(input("Number of columns (max 35): "))
         if width > 35:  # Not enough labels -- add more if you want more columns.
             raise ValueError
     except ValueError:
