@@ -15,7 +15,7 @@ class ConnectFour:
     board = np.zeros((6, 7), dtype=int)
     current_move = None
     current_player = 0
-    number_of_checkers_in_column = [0] * 7
+    checkers_in_column = [0] * 7
 
     def print_board(self):
         """
@@ -62,8 +62,7 @@ class ConnectFour:
             return False
 
         # Check that a move is possible in given column.
-        if self.number_of_checkers_in_column[self.current_move] < 6:
-            self.number_of_checkers_in_column[self.current_move] += 1
+        if self.checkers_in_column[self.current_move] < 6:
             return True
 
         return False
@@ -100,8 +99,8 @@ class ConnectFour:
         """
         Add a checker at the lowest position possible in a column.
         """
-        column = self.board[:, self.current_move]
-        self.board[np.argmax(np.where(column == 0)), self.current_move] = self.current_player + 1
+        self.board[self.checkers_in_column[self.current_move], self.current_move] = self.current_player + 1
+        self.checkers_in_column[self.current_move] += 1
 
     def start(self):
         """
