@@ -102,8 +102,9 @@ class ConnectFour:
                3 O O O O
 
             and we're checking the diagonal in the direction of the 'X', we'll also check the
-            same diagonal in the cell located at '2' and '3'. This should cover cases where
-            the last checker placed in a four-in-a-row is not at the ends.
+            same diagonal in the cell located at '2' and '3'.  This should cover cases where
+            the last checker placed in a four-in-a-row is not at the ends.  We do something
+            similar for "Look Right" and "Look Left".
             """
             for y, x in ((row - y_step * i, column - x_step * i) for i in range(3)):
 
