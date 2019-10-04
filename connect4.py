@@ -3,10 +3,11 @@ Just a tiny text-based ConnectFour game.
 """
 
 import os
+import time
 from itertools import product
 import numpy as np
 
-TERMSIZE = os.get_terminal_size().columns
+TERMSIZE = os.get_terminal_size().COLUMNS
 
 def center(*lines):
     """
@@ -44,11 +45,20 @@ class ConnectFour:
         footer = f"╰{'─┴' * (self.width - 1)}─╯"
         print(*center(header, *gutter, footer), sep="\n")
 
+    def animate_move(self):
+        """
+        Animate a checker falling into place.
+        """
+        for row in range(self.height - self.checkers_in_column[self.current_move]):
+            self.board[row, self.current_move] = self.current_player + 1
+            self.print_board()
+            self.board[row, self.current_move] = 0
+            time.sleep(.2)
+
     def is_move_valid(self):
         """
         Returns True if self.current_move is a valid move or 'q'.
         """
-
         if self.current_move is None:
             return False
 
@@ -144,9 +154,11 @@ class ConnectFour:
                 print_line(f"{'●○'[self.current_player]}'s move,"
                            "enter column or 'q' to quit:\n")
                 self.current_move = input("".center(TERMSIZE // 2)).lower()
+
             if self.current_move == "q":
                 break
 
+            self.animate_move()
             self.update_board()
 
             if self.is_connect_four():
@@ -163,15 +175,15 @@ class ConnectFour:
 
 if __name__ == "__main__":
     try:
-        width = int(input("Number of columns (max 35): "))
-        if width > 35:  # Not enough labels -- add more if you want more columns.
+        COLUMNS = int(input("Number of columns (max 35): "))
+        if COLUMNS > 35:  # Not enough labels -- add more if you want more COLUMNS.
             raise ValueError
     except ValueError:
-        width = 7
+        COLUMNS = 7
 
     try:
-        height = int(input("Number of rows: "))
+        ROWS = int(input("Number of rows: "))
     except ValueError:
-        height = 6
+        ROWS = 6
 
-    ConnectFour(height, width).start()
+    ConnectFour(ROWS, COLUMNS).start()
