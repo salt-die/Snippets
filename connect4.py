@@ -76,42 +76,38 @@ class ConnectFour:
         # Location of our last move
         row, column = HEIGHT - self.checkers_in_column[self.current_move], self.current_move
 
-        # Look right
-        if column + 4 <= WIDTH:
+        LOOK_RIGHT = column + 4 <= WIDTH
+        LOOK_LEFT = column - 3 >= 0
+        LOOK_UP = row - 3 >= 0
+        LOOK_DOWN = row + 4 <= HEIGHT
+
+        if LOOK_RIGHT:
             if (self.board[row, column:column + 4] == self.current_player + 1).all():
                 return True
 
-        #Look left
-        if column - 3 >= 0:
+        if LOOK_LEFT:
             if (self.board[row, column - 3:column + 1] == self.current_player + 1).all():
                 return True
 
-        # Look down
-        if row + 4 <= HEIGHT:
+        if LOOK_DOWN:
             if (self.board[row:row + 4, column] == self.current_player + 1).all():
                 return True
 
-        # We don't look up -- how would one place a checker at the bottom of a 4-in-a-row?
+        def diagonal_check(y_step, x_step):
+            return all(self.board[row + y_step * i, column + x_step * i] == self.current_player + 1
+                       for i in range(4))
 
-        # Look up-right
-        if row - 3 >= 0 and column + 4 <= WIDTH:
-            if all(self.board[row - i, column + i] == self.current_player + 1 for i in range(4)):
-                   return True
+        if LOOK_UP and LOOK_RIGHT and diagonal_check(-1, 1):
+            return True
 
-        # Look up-left:
-        if row - 3 >= 0 and column - 3 >= 0:
-            if all(self.board[row - i, column - i] == self.current_player + 1 for i in range(4)):
-                   return True
+        if LOOK_UP and LOOK_LEFT and diagonal_check(-1, -1):
+            return True
 
-        # Look down-right
-        if row + 4 <= HEIGHT and column + 4 <= WIDTH:
-            if all(self.board[row + i, column + i] == self.current_player + 1 for i in range(4)):
-                return True
+        if LOOK_DOWN and LOOK_RIGHT and diagonal_check(1, 1):
+            return True
 
-        # Look down-left
-        if row + 4 <= HEIGHT and column - 3 >= 0:
-            if all(self.board[row + i, column - i] == self.current_player + 1 for i in range(4)):
-                return True
+        if LOOK_DOWN and LOOK_RIGHT and diagonal_check(1, -1):
+            return True
 
         return False
 
