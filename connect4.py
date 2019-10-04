@@ -166,7 +166,6 @@ if __name__ == "__main__":
         if width > 35:  # Not enough labels -- add more if you want more columns.
             raise ValueError
     except ValueError:
-        #WIDTH will be default
         width = 7
 
     try:
