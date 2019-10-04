@@ -7,14 +7,14 @@ import time
 from itertools import product
 import numpy as np
 
-TERMSIZE = os.get_terminal_size().columns
+TERMX, TERMY = os.get_terminal_size()
 
 def center(*lines):
     """
     Center lines in terminal.
     """
     for line in lines:
-        yield line.center(TERMSIZE)
+        yield line.center(TERMX)
 
 def print_line(line):
     """
@@ -41,6 +41,9 @@ class ConnectFour:
         Print our current board state.
         """
         os.system("clear || cls")  # Clears the terminal
+
+        for _ in range((TERMY - self.height - 5) // 2):
+            print()
 
         header = f"╷{'╷'.join(self.labels)}╷"
         gutter = (f"│{'│'.join(' ●○'[value] for value in row)}│" for row in self.board)
@@ -155,7 +158,7 @@ class ConnectFour:
             while not self.is_move_valid():
                 print_line(f"{'●○'[self.current_player]}'s move,"
                            "enter column or 'q' to quit:\n")
-                self.current_move = input("".center(TERMSIZE // 2)).lower()
+                self.current_move = input("".center(TERMX // 2)).lower()
 
             if self.current_move == "q":
                 break
