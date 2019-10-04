@@ -64,7 +64,6 @@ class ConnectFour:
 
         # Check that a move is possible in given column.
         if self.checkers_in_column[self.current_move] < HEIGHT:
-            self.checkers_in_column[self.current_move] += 1
             return True
 
         self.print_line("No moves possible in that column!")
@@ -102,6 +101,7 @@ class ConnectFour:
         """
         Add a checker at the lowest position possible in a column.
         """
+        self.checkers_in_column[self.current_move] += 1
         self.board[HEIGHT - self.checkers_in_column[self.current_move],
                    self.current_move] = self.current_player + 1
 
