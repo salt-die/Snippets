@@ -3,6 +3,7 @@ Just a tiny text-based ConnectFour game.
 """
 
 import os
+from itertools import product
 import numpy as np
 
 TERMSIZE = os.get_terminal_size().columns
@@ -89,33 +90,33 @@ class ConnectFour:
             if x - 3 >= 0 and (self.board[row, x - 3:x + 1] == player).all():
                 return True
 
-        def diagonal(y, x, y_step, x_step):
-            return all(self.board[y + y_step * i, x + x_step * i] == player
-                       for i in range(4))
+        def diagonal(y_step, x_step):
+            """
+            If our cell is at the '1':
 
-        # Look up-right
-        for y, x in ((row + i, column - i) for i in range(3)
-                     if row + i < HEIGHT and column - i >= 0):
-            if y - 3 >= 0 and x + 4 <= WIDTH and diagonal(y, x, -1, 1):
-                return True
+               O O O O X
+               O O O X O
+               O O 1 O O
+               O 2 O O O
+               3 O O O O
 
-        # Look up-left
-        for y, x in ((row + i, column + i) for i in range(3)
-                     if row + i < HEIGHT and column + i < WIDTH):
-            if y - 3 >= 0 and x - 3 >= 0 and diagonal(y, x, -1, -1):
-                return True
+            and we're checking the diagonal in the direction of the 'X', we'll also check the
+            same diagonal in the cell located at '2' and '3'. This should cover cases where
+            the last checker placed in a four-in-a-row is not at the ends.
+            """
+            for y, x in ((row - y_step * i, column - x_step * i) for i in range(3)):
 
-        # Look down-right
-        for y, x in ((row - i, column - i) for i in range(3)
-                     if row - i >= 0 and column - i >= 0):
-            if y + 4 <= HEIGHT and x + 4 <= WIDTH and diagonal(y, x, 1, 1):
-                return True
+                if not all((0 <= y < HEIGHT, 0 <= y + 3 * y_step < HEIGHT,
+                            0 <= x < WIDTH, 0 <= x + 3 * x_step < WIDTH)):
+                    continue
 
-        # Look down-left
-        for y, x in ((row - i, column + i) for i in range(3)
-                     if row - i >= 0 and column + i < WIDTH):
-            if y + 4 <= HEIGHT and x - 3 >= 0 and diagonal(y, x, 1, -1):
-                return True
+                if all(self.board[y + y_step * i, x + x_step * i] == player for i in range(4)):
+                    return True
+
+            return False
+
+        if any(diagonal(*steps) for steps in product((-1, 1), repeat=2)):
+            return True
 
         return False
 
