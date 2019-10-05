@@ -10,7 +10,7 @@ But we've vectorized as much as possible with einsums.
 import numpy as np
 import matplotlib.pyplot as plt
 
-ITERATIONS = 10
+ITERATIONS = 15
 curve = np.array([[0., 1.], [0., 0.], [1., 0.]])
 rotate45_scale_by_half = np.array([[.5, -.5], [.5, .5]])
 move = np.array([0., 1.])

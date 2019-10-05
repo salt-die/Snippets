@@ -28,8 +28,8 @@ while True:
         print(*("".join("M" if cell else " " for cell in row) for row in universe), sep="\n")
         nd.convolve(universe, KERNEL, mode="constant", output=convolved_universe)
         # It isn't pretty, but doing the following logic in place:
-        # universe = (((universe == 1) & (convolved_universe > 1) & (convolved_universe < 4)) |
-        #           ((universe == 0) & (convolved_universe == 3))).astype(np.uint8)
+        # (((universe == 1) & (convolved_universe > 1) & (convolved_universe < 4)) |
+        #  ((universe == 0) & (convolved_universe == 3)))
         np.equal(universe, 1, out=intermediate_1)
         np.greater(convolved_universe, 1, out=intermediate_2)
         np.logical_and(intermediate_1, intermediate_2, out=intermediate_1)
