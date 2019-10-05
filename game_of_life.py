@@ -41,4 +41,5 @@ while True:
         np.logical_and(intermediate_2, intermediate_3, out=intermediate_2)
         np.logical_or(intermediate_1, intermediate_2, out=universe)
         time.sleep(.1)
+    #Reset after a time
     universe = np.random.randint(2, size=DIM, dtype=np.uint8)
