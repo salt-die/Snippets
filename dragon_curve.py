@@ -16,7 +16,7 @@ rotate45_scale_by_half = np.array([[.5, -.5], [.5, .5]])
 move = np.array([0., 1.])
 rotate45 = np.array([[0., -1.], [1., 0.]])
 
-for i in range(ITERATIONS):
+for _ in range(ITERATIONS):
     np.subtract(curve, move, out=curve)
     # Element-wise dot product --- curve is scaled and rotated
     np.einsum('ik,kj->ij', curve, rotate45_scale_by_half, out=curve)
@@ -27,4 +27,5 @@ for i in range(ITERATIONS):
 
 plt.plot(*curve.T)
 plt.axis('off')
+plt.tight_layout()
 plt.show()
