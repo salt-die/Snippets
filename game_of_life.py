@@ -12,8 +12,7 @@ KERNEL = np.array([[1, 1, 1],
                    [1, 0, 1],
                    [1, 1, 1]], dtype=np.uint8)
 
-COLUMNS, ROWS = os.get_terminal_size()
-DIM = ROWS, COLUMNS
+DIM = os.get_terminal_size()[::-1]
 
 universe = np.random.randint(2, size=DIM, dtype=np.uint8)
 
