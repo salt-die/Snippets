@@ -26,6 +26,10 @@ def print_line(line):
 class ConnectFour:
     """
     ConnectFour! The first player to connect four checkers in a row wins!
+
+    Notes:
+    Our current_player is either 0 or 1, but the players are represented with 1 or 2 on our
+    board.
     """
     current_move = None
     current_player = 0
@@ -49,16 +53,6 @@ class ConnectFour:
         print("\n" * ((TERMY - self.height - 5) // 2)) #Center Vertically
         print(*center(header, *gutter, footer), sep="\n")
 
-    def animate_move(self):
-        """
-        Animate a checker falling into place.
-        """
-        for row in range(self.height - self.checkers_in_column[self.current_move] - 1):
-            self.board[row, self.current_move] = self.current_player + 1
-            self.print_board()
-            self.board[row, self.current_move] = 0
-            time.sleep(.08)
-
     def is_move_valid(self):
         """
         Returns True if self.current_move is a valid move or 'q'.
@@ -81,6 +75,31 @@ class ConnectFour:
 
         print_line("No moves possible in that column!")
         return False
+
+    def get_move(self):
+        """
+        Sets a players input to self.current_move.
+        """
+        print_line(f"{'●○'[self.current_player]}'s move, enter column or 'q' to quit:\n")
+        self.current_move = input("".center(TERMX // 2)).lower()
+
+    def animate_move(self):
+        """
+        Animate a checker falling into place.
+        """
+        for row in range(self.height - self.checkers_in_column[self.current_move] - 1):
+            self.board[row, self.current_move] = self.current_player + 1
+            self.print_board()
+            self.board[row, self.current_move] = 0
+            time.sleep(.08)
+
+    def update_board(self):
+        """
+        Add a checker at the lowest position possible in a column.
+        """
+        self.checkers_in_column[self.current_move] += 1
+        self.board[self.height - self.checkers_in_column[self.current_move],
+                   self.current_move] = self.current_player + 1
 
     def is_connect_four(self):
         """
@@ -136,33 +155,23 @@ class ConnectFour:
 
         return False
 
-    def update_board(self):
-        """
-        Add a checker at the lowest position possible in a column.
-        """
-        self.checkers_in_column[self.current_move] += 1
-        self.board[self.height - self.checkers_in_column[self.current_move],
-                   self.current_move] = self.current_player + 1
-
     def start(self):
         """
         The main game loop.
         """
         for _ in range(self.width * self.height):
-
             self.current_move = None
 
             self.print_board()
 
             while not self.is_move_valid():
-                print_line(f"{'●○'[self.current_player]}'s move, "
-                           "enter column or 'q' to quit:\n")
-                self.current_move = input("".center(TERMX // 2)).lower()
+                self.get_move()
 
             if self.current_move == "q":
                 break
 
             self.animate_move()
+
             self.update_board()
 
             if self.is_connect_four():
@@ -171,7 +180,6 @@ class ConnectFour:
                 break
 
             self.current_player = not self.current_player
-
         else:
             self.print_board()
             print_line("It's a draw!")
