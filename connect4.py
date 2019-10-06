@@ -50,7 +50,7 @@ class ConnectFour:
         gutter = (f"│{'│'.join(' ●○'[value] for value in row)}│" for row in self.board)
         footer = f"╰{'─┴' * (self.width - 1)}─╯"
 
-        print("\n" * ((TERMY - self.height - 5) // 2)) #Center Vertically
+        print("\n" * ((TERMY - self.height - 5) // 2))  # Vertical Buffer
         print(*center(header, *gutter, footer), sep="\n")
 
     def is_move_valid(self):
