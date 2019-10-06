@@ -53,7 +53,7 @@ class ConnectFour:
         """
         Animate a checker falling into place.
         """
-        for row in range(self.height - self.checkers_in_column[self.current_move]):
+        for row in range(self.height - self.checkers_in_column[self.current_move] - 1):
             self.board[row, self.current_move] = self.current_player + 1
             self.print_board()
             self.board[row, self.current_move] = 0
