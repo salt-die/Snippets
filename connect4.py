@@ -36,7 +36,7 @@ class ConnectFour:
 
     def __init__(self, height=6, width=7):
         self.HEIGHT, self.WIDTH = height, min(width, 35)
-        self.labels = "1234567890abcdefghijklmnoprstuvwxyz"[:self.WIDTH]
+        self.LABELS = "1234567890abcdefghijklmnoprstuvwxyz"[:self.WIDTH]
         self.board = np.zeros((self.HEIGHT, self.WIDTH), dtype=int)
         self.checkers_in_column = [0] * self.WIDTH
 
@@ -46,7 +46,7 @@ class ConnectFour:
         """
         os.system("clear || cls")  # Clears the terminal
 
-        header = f"╷{'╷'.join(self.labels)}╷"
+        header = f"╷{'╷'.join(self.LABELS)}╷"
         gutter = (f"│{'│'.join(' ●○'[value] for value in row)}│" for row in self.board)
         footer = f"╰{'─┴' * (self.WIDTH - 1)}─╯"
 
@@ -63,11 +63,11 @@ class ConnectFour:
         if self.current_move == 'q':
             return True
 
-        if len(self.current_move) > 1 or self.current_move not in self.labels:
+        if len(self.current_move) > 1 or self.current_move not in self.LABELS:
             print_line("Please input a valid column!")
             return False
 
-        self.current_move = self.labels.find(self.current_move)
+        self.current_move = self.LABELS.find(self.current_move)
 
         # Check that a move is possible in given column.
         if self.checkers_in_column[self.current_move] < self.HEIGHT:
