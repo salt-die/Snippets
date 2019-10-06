@@ -42,12 +42,11 @@ class ConnectFour:
         """
         os.system("clear || cls")  # Clears the terminal
 
-        for _ in range((TERMY - self.height - 5) // 2):
-            print()
-
         header = f"╷{'╷'.join(self.labels)}╷"
         gutter = (f"│{'│'.join(' ●○'[value] for value in row)}│" for row in self.board)
         footer = f"╰{'─┴' * (self.width - 1)}─╯"
+
+        print("\n" * ((TERMY - self.height - 5) // 2)) #Center Vertically
         print(*center(header, *gutter, footer), sep="\n")
 
     def animate_move(self):
