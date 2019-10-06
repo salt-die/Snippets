@@ -35,10 +35,10 @@ class ConnectFour:
     current_player = 0
 
     def __init__(self, height=6, width=7):
-        self.HEIGHT, self.WIDTH = height, min(width, 35)
-        self.LABELS = "1234567890abcdefghijklmnoprstuvwxyz"[:self.WIDTH]
-        self.board = np.zeros((self.HEIGHT, self.WIDTH), dtype=int)
-        self.checkers_in_column = [0] * self.WIDTH
+        self.height, self.width = height, min(width, 35)
+        self.labels = "1234567890abcdefghijklmnoprstuvwxyz"[:self.width]
+        self.board = np.zeros((self.height, self.width), dtype=int)
+        self.checkers_in_column = [0] * self.width
 
     def print_board(self):
         """
@@ -46,11 +46,11 @@ class ConnectFour:
         """
         os.system("clear || cls")  # Clears the terminal
 
-        header = f"╷{'╷'.join(self.LABELS)}╷"
+        header = f"╷{'╷'.join(self.labels)}╷"
         gutter = (f"│{'│'.join(' ●○'[value] for value in row)}│" for row in self.board)
-        footer = f"╰{'─┴' * (self.WIDTH - 1)}─╯"
+        footer = f"╰{'─┴' * (self.width - 1)}─╯"
 
-        print("\n" * ((TERMY - self.HEIGHT - 5) // 2))  # Vertical Buffer
+        print("\n" * ((TERMY - self.height - 5) // 2))  # Vertical Buffer
         print(*center(header, *gutter, footer), sep="\n")
 
     def is_move_valid(self):
@@ -63,14 +63,14 @@ class ConnectFour:
         if self.current_move == 'q':
             return True
 
-        if len(self.current_move) > 1 or self.current_move not in self.LABELS:
+        if len(self.current_move) > 1 or self.current_move not in self.labels:
             print_line("Please input a valid column!")
             return False
 
-        self.current_move = self.LABELS.find(self.current_move)
+        self.current_move = self.labels.find(self.current_move)
 
         # Check that a move is possible in given column.
-        if self.checkers_in_column[self.current_move] < self.HEIGHT:
+        if self.checkers_in_column[self.current_move] < self.height:
             return True
 
         print_line("No moves possible in that column!")
@@ -87,7 +87,7 @@ class ConnectFour:
         """
         Animate a checker falling into place.
         """
-        for row in range(self.HEIGHT - self.checkers_in_column[self.current_move] - 1):
+        for row in range(self.height - self.checkers_in_column[self.current_move] - 1):
             self.board[row, self.current_move] = self.current_player + 1
             self.print_board()
             self.board[row, self.current_move] = 0
@@ -98,7 +98,7 @@ class ConnectFour:
         Add a checker at the lowest position possible in a column.
         """
         self.checkers_in_column[self.current_move] += 1
-        self.board[self.HEIGHT - self.checkers_in_column[self.current_move],
+        self.board[self.height - self.checkers_in_column[self.current_move],
                    self.current_move] = self.current_player + 1
 
     def is_connect_four(self):
@@ -106,21 +106,21 @@ class ConnectFour:
         Returns True if a player has won.
         """
         # Location of our last checker
-        row, column = self.HEIGHT - self.checkers_in_column[self.current_move], self.current_move
+        row, column = self.height - self.checkers_in_column[self.current_move], self.current_move
 
         player = self.current_player + 1
 
         # Look Down
-        if row + 3 < self.HEIGHT and (self.board[row:row + 4, column] == player).all():
+        if row + 3 < self.height and (self.board[row:row + 4, column] == player).all():
             return True
 
         # Look Right
         for x in (column - i for i in range(3) if column - i >= 0):
-            if x + 3 < self.WIDTH and (self.board[row, x:x + 4] == player).all():
+            if x + 3 < self.width and (self.board[row, x:x + 4] == player).all():
                 return True
 
         # Look Left
-        for x in (column + i for i in range(3) if column + i < self.WIDTH):
+        for x in (column + i for i in range(3) if column + i < self.width):
             if x - 3 >= 0 and (self.board[row, x - 3:x + 1] == player).all():
                 return True
 
@@ -142,8 +142,8 @@ class ConnectFour:
             for y, x in ((row - y_step * i, column - x_step * i) for i in range(3)):
 
                 #Check that either end of the diagonal is in bounds.
-                if not all((0 <= y < self.HEIGHT, 0 <= y + 3 * y_step < self.HEIGHT,
-                            0 <= x < self.WIDTH, 0 <= x + 3 * x_step < self.WIDTH)):
+                if not all((0 <= y < self.height, 0 <= y + 3 * y_step < self.height,
+                            0 <= x < self.width, 0 <= x + 3 * x_step < self.width)):
                     continue
 
                 if all(self.board[y + y_step * i, x + x_step * i] == player for i in range(4)):
@@ -160,7 +160,7 @@ class ConnectFour:
         """
         The main game loop.
         """
-        for _ in range(self.WIDTH * self.HEIGHT):
+        for _ in range(self.width * self.height):
             self.current_move = None
 
             self.print_board()
