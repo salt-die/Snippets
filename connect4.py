@@ -29,7 +29,7 @@ class ConnectFour:
 
     Notes:
     Our current_player is either 0 or 1, but the players are represented with 1 or 2 on our
-    board.
+    board (empty cells are 0).
     """
     current_move = None
     current_player = 0
