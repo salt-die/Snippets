@@ -35,10 +35,10 @@ class ConnectFour:
     current_player = 0
 
     def __init__(self, height=6, width=7):
-        self.height, self.width = height, width
-        self.labels = "1234567890abcdefghijklmnoprstuvwxyz"[:width]
-        self.board = np.zeros((height, width), dtype=int)
-        self.checkers_in_column = [0] * width
+        self.height, self.width = height, min(width, 35)
+        self.labels = "1234567890abcdefghijklmnoprstuvwxyz"[:self.width]
+        self.board = np.zeros((self.height, self.width), dtype=int)
+        self.checkers_in_column = [0] * self.width
 
     def print_board(self):
         """
