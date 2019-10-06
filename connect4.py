@@ -141,6 +141,7 @@ class ConnectFour:
             """
             for y, x in ((row - y_step * i, column - x_step * i) for i in range(3)):
 
+                #Check that either end of the diagonal is in bounds.
                 if not all((0 <= y < self.height, 0 <= y + 3 * y_step < self.height,
                             0 <= x < self.width, 0 <= x + 3 * x_step < self.width)):
                     continue
