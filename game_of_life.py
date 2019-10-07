@@ -25,7 +25,7 @@ intermediate_3 = np.zeros_like(universe)
 while True:
     for _ in range(1000):
         os.system("clear || cls")  # Clears the terminal
-        print(*("".join("M" if cell else " " for cell in row) for row in universe), sep="\n")
+        print(*("".join("█" if cell else " " for cell in row) for row in universe), sep="\n")
         nd.convolve(universe, KERNEL, mode="constant", output=convolved_universe)
         # It isn't pretty, but doing the following logic in place:
         # (((universe == 1) & (convolved_universe > 1) & (convolved_universe < 4)) |
@@ -39,6 +39,6 @@ while True:
         np.equal(convolved_universe, 3, out=intermediate_3)
         np.logical_and(intermediate_2, intermediate_3, out=intermediate_2)
         np.logical_or(intermediate_1, intermediate_2, out=universe)
-        time.sleep(.1)
+        time.sleep(.08)
     #Reset after a time
     universe = np.random.randint(2, size=DIM, dtype=np.uint8)
