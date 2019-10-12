@@ -22,3 +22,5 @@ your set to a list beforehand
 * dragon_curve.py makes dragon curves with numpy
 
 * game_of_life.py is Conway's Game of Life, but with scipy convolutions -- displays in terminal
+
+* reversi.py connect4 code repurposed for another fun terminal game
