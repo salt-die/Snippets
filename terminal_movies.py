@@ -16,15 +16,16 @@ args = parser.parse_args()
 path = args.path
 
 ascii_map = dict(enumerate(' .,:;<+*LtCa4U80dQM@'))
-scale = 255/len(ascii_map) + .05  #Add a small amount to prevent key errors
+scale = 255/len(ascii_map) + .05  # Add a small amount to prevent key errors
 
 def main(screen):
     init_curses(screen)
 
     movie = cv2.VideoCapture(path)
     audio = MediaPlayer(path)
-    audio.get_frame() #Start audio
     running = read_flag = True
+
+    audio.get_frame() # Start audio
 
     while read_flag and running:
         screen_height, screen_width = screen.getmaxyx()
@@ -38,7 +39,7 @@ def main(screen):
                           ''.join(ascii_map[int(color/scale)] for color in row[:-1]))
         screen.refresh()
 
-        #This loop syncs video with audio.  Without it the video may lag behind.
+        # This loop syncs video with audio.  Without it the video may lag behind.
         audio_time = audio.get_pts() * 1000
         while audio_time - movie.get(cv2.CAP_PROP_POS_MSEC) > 1:
             movie.read()
