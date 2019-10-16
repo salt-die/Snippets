@@ -20,3 +20,5 @@ your set to a list beforehand
 * dragon_curve.py makes dragon curves with numpy
 
 * game_of_life.py is Conway's Game of Life, but with scipy convolutions -- displays in terminal
+
+* terminal_movies.py converts movies to ascii so that you can watch them in your terminal -- no sound yet
