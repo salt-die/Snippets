@@ -25,10 +25,11 @@ def main(screen):
     audio = MediaPlayer(path)
     running = read_flag = True
 
-    audio.get_frame() # Start audio
+
 
     while read_flag and running:
         screen_height, screen_width = screen.getmaxyx()
+        audio.get_frame()
         read_flag, frame = movie.read()
 
         grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
