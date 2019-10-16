@@ -38,6 +38,7 @@ def main(screen):
                           ''.join(ascii_map[int(color/scale)] for color in row[:-1]))
         screen.refresh()
 
+        #This loop syncs video with audio.  Without it the video may lag behind.
         audio_time = audio.get_pts() * 1000
         while audio_time - movie.get(cv2.CAP_PROP_POS_MSEC) > 1:
             movie.read()
