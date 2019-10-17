@@ -28,12 +28,12 @@ def main(screen):
 
 
     while read_flag and running:
-        screen_height, screen_width = screen.getmaxyx()
+        #screen_height, screen_width =
         audio.get_frame()
         read_flag, frame = movie.read()
 
         grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        resized = cv2.resize(grayscale, (int(screen_width), int(screen_height)))
+        resized = cv2.resize(grayscale, screen.getmaxyx()[::-1])
 
         for row_num, row in enumerate(resized):
             screen.addstr(row_num, 0,
