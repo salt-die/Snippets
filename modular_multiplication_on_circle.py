@@ -6,7 +6,6 @@ Use up/down to change number of points and left/right to change the multiplicati
 from collections import defaultdict
 import numpy as np
 import pygame
-from pygame.draw import aaline, circle
 
 DIM = 800
 FORECOLOR = 193, 169, 13
@@ -35,8 +34,8 @@ while running:
     window.fill(BACKCOLOR)
     for point in range(NUMBER_OF_POINTS):
         start = coordinates(point)
-        circle(window, FORECOLOR, start.astype(int), 4, 4)
-        aaline(window, FORECOLOR, start, coordinates(FACTOR * point), 1)
+        pygame.draw.circle(window, FORECOLOR, start.astype(int), 4, 4)
+        pygame.draw.aaline(window, FORECOLOR, start, coordinates(FACTOR * point), 1)
     text_surfaces = [font.render(text, True, FORECOLOR)
                      for text in [f'Points: {NUMBER_OF_POINTS}', f'Factor: {round(FACTOR, 1)}']]
     window.blit(text_surfaces[0], dest=(10,0))
