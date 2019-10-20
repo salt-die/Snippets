@@ -10,7 +10,7 @@ from pygame.draw import aaline, circle
 
 NUMBER_OF_POINTS = 40
 FACTOR = 10
-DIM = 500
+DIM = 800
 FORECOLOR = (193, 169, 13)
 BACKCOLOR = (37, 147, 206)
 
