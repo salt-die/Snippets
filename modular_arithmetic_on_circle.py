@@ -49,7 +49,7 @@ while running:
     update()
 
     for event in pygame.event.get():
-        if event.type == 12: #Quit
+        if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             keys[event.key] = True
