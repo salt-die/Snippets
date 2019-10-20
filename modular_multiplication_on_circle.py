@@ -7,14 +7,16 @@ from collections import defaultdict
 import numpy as np
 import pygame
 
+#Modify these as you will
 DIM = 800
 FORECOLOR = 193, 169, 13
 BACKCOLOR = 17, 107, 156
-BLACK = 0, 0, 0
 
+#But Leave these alone
 DIM_ARRAY = np.array([DIM, DIM])
 CENTER = DIM_ARRAY / 2
 RADIUS = DIM / 2 - 10
+BLACK = 0, 0, 0
 NUMBER_OF_POINTS = 40
 FACTOR = 10
 
