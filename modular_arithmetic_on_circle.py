@@ -28,7 +28,7 @@ running = True
 
 def update():
     points = {point:RADIUS * np.array([np.sin(point * 2 * np.pi / NUMBER_OF_POINTS),
-                                   np.cos(point * 2 * np.pi / NUMBER_OF_POINTS)])
+                                       np.cos(point * 2 * np.pi / NUMBER_OF_POINTS)])
               for point in range(NUMBER_OF_POINTS)}
 
     window.fill(BACKCOLOR)
