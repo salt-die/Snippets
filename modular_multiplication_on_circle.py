@@ -8,15 +8,15 @@ import numpy as np
 import pygame
 from pygame.draw import aaline, circle
 
-NUMBER_OF_POINTS = 40
-FACTOR = 10
 DIM = 800
-FORECOLOR = (193, 169, 13)
-BACKCOLOR = (17, 107, 156)
+FORECOLOR = 193, 169, 13
+BACKCOLOR = 17, 107, 156
 
 DIM_ARRAY = np.array([DIM, DIM])
-CENTER = DIM_ARRAY // 2
-RADIUS = DIM / 2 - 5
+CENTER = DIM_ARRAY / 2
+RADIUS = DIM / 2 - 10
+NUMBER_OF_POINTS = 40
+FACTOR = 10
 
 keys = defaultdict(bool)
 
@@ -26,27 +26,22 @@ window = pygame.display.set_mode(DIM_ARRAY)
 font = pygame.font.Font(pygame.font.get_default_font(), 20)
 running = True
 
-def update():
-    def coordinates(point):
-        theta = point * 2 * np.pi / NUMBER_OF_POINTS
-        return RADIUS * np.array([np.sin(theta), np.cos(theta)]) + CENTER
+def coordinates(point):
+    theta = point * 2 * np.pi / NUMBER_OF_POINTS
+    return RADIUS * np.array([np.sin(theta), np.cos(theta)]) + CENTER
+
+while running:
 
     window.fill(BACKCOLOR)
-
     for point in range(NUMBER_OF_POINTS):
         start = coordinates(point)
         circle(window, FORECOLOR, start.astype(int), 4, 4)
         aaline(window, FORECOLOR, start, coordinates(FACTOR * point), 1)
-
     text_surfaces = [font.render(text, True, FORECOLOR)
                      for text in [f'Points: {NUMBER_OF_POINTS}', f'Factor: {round(FACTOR, 1)}']]
-
     window.blit(text_surfaces[0], dest=(10,0))
     window.blit(text_surfaces[1], dest=(10,20))
     pygame.display.update()
-
-while running:
-    update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
