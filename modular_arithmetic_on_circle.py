@@ -36,7 +36,7 @@ def update():
     for point in range(NUMBER_OF_POINTS):
         start = coordinates(point)
         circle(window, FORECOLOR, start.astype(int), 4, 4)
-        aaline(window, FORECOLOR, start, coordinates((FACTOR * point) % NUMBER_OF_POINTS), 1)
+        aaline(window, FORECOLOR, start, coordinates(FACTOR * point), 1)
 
     text_surfaces = [font.render(text, True, FORECOLOR)
                      for text in [f'Points: {NUMBER_OF_POINTS}', f'Factor: {round(FACTOR, 1)}']]
