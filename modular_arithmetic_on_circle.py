@@ -57,7 +57,7 @@ while running:
     if keys[pygame.K_UP]:
         NUMBER_OF_POINTS += 1
     if keys[pygame.K_DOWN]:
-        NUMBER_OF_POINTS -= 1
+        NUMBER_OF_POINTS -= 1 if NUMBER_OF_POINTS else 0
     if keys[pygame.K_LEFT]:
         FACTOR -= .1
     if keys[pygame.K_RIGHT]:
