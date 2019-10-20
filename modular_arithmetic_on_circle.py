@@ -27,16 +27,16 @@ font = pygame.font.Font(pygame.font.get_default_font(), 20)
 running = True
 
 def update():
-    points = [RADIUS * np.array([np.sin(point * 2 * np.pi / NUMBER_OF_POINTS),
-                                 np.cos(point * 2 * np.pi / NUMBER_OF_POINTS)])
-              for point in range(NUMBER_OF_POINTS)]
+    def coordinates(point):
+        theta = point * 2 * np.pi / NUMBER_OF_POINTS
+        return RADIUS * np.array([np.sin(theta), np.cos(theta)]) + CENTER
 
     window.fill(BACKCOLOR)
 
-    for number, point in enumerate(points):
-        circle(window, FORECOLOR, (point + CENTER).astype(int), 4, 4)
-        aaline(window, FORECOLOR,
-               point + CENTER, points[int((FACTOR * number) % NUMBER_OF_POINTS)] + CENTER, 1)
+    for point in range(NUMBER_OF_POINTS):
+        start = coordinates(point)
+        circle(window, FORECOLOR, start.astype(int), 4, 4)
+        aaline(window, FORECOLOR, start, coordinates((FACTOR * point) % NUMBER_OF_POINTS), 1)
 
     text_surfaces = [font.render(text, True, FORECOLOR)
                      for text in [f'Points: {NUMBER_OF_POINTS}', f'Factor: {round(FACTOR, 1)}']]
