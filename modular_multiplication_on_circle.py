@@ -10,6 +10,7 @@ import pygame
 DIM = 800
 FORECOLOR = 193, 169, 13
 BACKCOLOR = 17, 107, 156
+BLACK = 0, 0, 0
 
 DIM_ARRAY = np.array([DIM, DIM])
 CENTER = DIM_ARRAY / 2
@@ -33,13 +34,14 @@ while running:
 
     window.fill(BACKCOLOR)
     for point in range(NUMBER_OF_POINTS):
-        start = coordinates(point)
-        pygame.draw.circle(window, FORECOLOR, start.astype(int), 4, 4)
-        pygame.draw.aaline(window, FORECOLOR, start, coordinates(FACTOR * point), 1)
+        pygame.draw.aaline(window, FORECOLOR, coordinates(point), coordinates(FACTOR * point), 1)
+    #Separate loop so lines don't draw on top of circles
+    for point in range(NUMBER_OF_POINTS):
+        pygame.draw.circle(window, BLACK, coordinates(point).astype(int), 4, 4)
     text_surfaces = [font.render(text, True, FORECOLOR)
                      for text in [f'Points: {NUMBER_OF_POINTS}', f'Factor: {round(FACTOR, 1)}']]
-    window.blit(text_surfaces[0], dest=(10, 0))
-    window.blit(text_surfaces[1], dest=(10, 20))
+    window.blit(text_surfaces[0], dest=(10, 10))
+    window.blit(text_surfaces[1], dest=(10, 30))
     pygame.display.update()
 
     for event in pygame.event.get():
