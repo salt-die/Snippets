@@ -20,3 +20,5 @@ your set to a list beforehand
 * dragon_curve.py makes dragon curves with numpy
 
 * game_of_life.py is Conway's Game of Life, but with scipy convolutions -- displays in terminal
+
+* modular_arithmetic_on_circle illustrates some nice patterns from connecting points on a circle
