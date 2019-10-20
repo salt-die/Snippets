@@ -1,5 +1,7 @@
 """
 Pygame implementation of https://www.youtube.com/watch?v=qhbuKbxJsk8
+
+Use up/down to change number of points and left/right to change the multiplication factor
 """
 from collections import defaultdict
 import numpy as np
