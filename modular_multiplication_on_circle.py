@@ -38,8 +38,8 @@ while running:
         pygame.draw.aaline(window, FORECOLOR, start, coordinates(FACTOR * point), 1)
     text_surfaces = [font.render(text, True, FORECOLOR)
                      for text in [f'Points: {NUMBER_OF_POINTS}', f'Factor: {round(FACTOR, 1)}']]
-    window.blit(text_surfaces[0], dest=(10,0))
-    window.blit(text_surfaces[1], dest=(10,20))
+    window.blit(text_surfaces[0], dest=(10, 0))
+    window.blit(text_surfaces[1], dest=(10, 20))
     pygame.display.update()
 
     for event in pygame.event.get():
