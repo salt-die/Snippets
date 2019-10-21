@@ -22,3 +22,5 @@ your set to a list beforehand
 * game_of_life.py is Conway's Game of Life, but with scipy convolutions -- displays in terminal
 
 * modular_arithmetic_on_circle illustrates some nice patterns from connecting points on a circle
+
+* game_of_life_averages.py is the game of life, but new cells are the average color of their parents
