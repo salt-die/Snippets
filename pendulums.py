@@ -5,9 +5,11 @@ import pygame
 DIM = 800
 FORECOLOR = 193, 169, 13
 BACKCOLOR = 17, 107, 156
-pendulums = [DIM/64 * i for i in range(11, 32)]
-START_ANGLE = np.pi/3
-TIME_DELTA = np.pi / 100
+MAX_RADIUS = 55
+NUMBER_OF_PENDULUMS = 20
+pendulums = list(range(MAX_RADIUS - NUMBER_OF_PENDULUMS - 1, MAX_RADIUS))
+START_ANGLE = np.pi / 3
+TIME_DELTA = np.pi / 200
 
 #But Leave these alone
 DIM_ARRAY = np.array([DIM, DIM])
@@ -19,8 +21,8 @@ pygame.init()
 window = pygame.display.set_mode(DIM_ARRAY)
 
 def coordinates(time, radius):
-    theta = START_ANGLE * np.cos((9.8/ radius)**.5 * time)
-    return radius * np.array([np.sin(theta), np.cos(theta)]) + CENTER
+    theta = START_ANGLE * np.cos((9.8 / radius)**.5 * time)
+    return DIM/(2 * MAX_RADIUS) * radius * np.array([np.sin(theta), np.cos(theta)]) + CENTER
 
 time = 0
 running = True
@@ -31,6 +33,12 @@ while running:
         pygame.draw.aaline(window, FORECOLOR, coordinates(time, pendulum), CENTER, 1)
     #Separate loop so lines don't draw on top of circles
     for pendulum in pendulums:
+        # for i in range(1,5):
+        #     trans = pygame.Surface((15,15))
+        #     trans.fill(BACKCOLOR)
+        #     trans.set_alpha(255/4 * i)
+        #     pygame.draw.circle(trans, BLACK, (7,7), 10, 10)
+        #     window.blit(trans, coordinates(time - (4 - i), pendulum).astype(int))
         pygame.draw.circle(window, BLACK, coordinates(time, pendulum).astype(int), 10, 10)
 
     pygame.display.update()
