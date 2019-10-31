@@ -2,6 +2,11 @@
 Context manager for increasing the recursion limit from:
 
 https://stackoverflow.com/questions/3323001/what-is-the-maximum-recursion-depth-in-python-and-how-to-increase-it
+
+Using it looks like:
+
+with RecursionLimit(2000):
+    something()
 """
 
 import sys
