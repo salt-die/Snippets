@@ -26,3 +26,5 @@ your set to a list beforehand
 * game_of_life_averages.py is the game of life, but new cells are the average color of their parents
 
 * pendulums.py demonstrates pendulum "waves" that appear when pendulums have different lengths
+
+* RecursionLimit.py is a context manager for temporarily change the recursion limit
