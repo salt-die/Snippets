@@ -10,8 +10,7 @@ class CyclicTuple:
     """
     def __init__(self, *items):
         self.__unshifted = tuple(items)
-        self.__canonical = min(items[i:] + items[:i]\
-                               for i,_ in enumerate(items))
+        self.__canonical = min(items[i:] + items[:i] for i, _ in enumerate(items))
 
     def __repr__(self):
         return repr(self.__unshifted)
