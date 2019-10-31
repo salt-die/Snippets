@@ -24,3 +24,5 @@ your set to a list beforehand
 * modular_arithmetic_on_circle illustrates some nice patterns from connecting points on a circle
 
 * game_of_life_averages.py is the game of life, but new cells are the average color of their parents
+
+* pendulums.py demonstrates pendulum "waves" that appear when pendulums have different lengths
