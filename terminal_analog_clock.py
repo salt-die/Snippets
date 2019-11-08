@@ -84,7 +84,7 @@ class Clock:
 
     def draw_face(self):
         # Boundary
-        for theta in np.linspace(0, 2 * np.pi, 100, endpoint=False):
+        for theta in np.linspace(0, 2 * np.pi, 200, endpoint=False):
             self.line_segment(theta, start=.95, stop=1, value=2)
 
         i = 0
