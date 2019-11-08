@@ -48,7 +48,7 @@ class Clock:
         """
         Draw a line segment.
 
-        start, stop are between 0-1 and represent percentage of max_radius
+        start, stop are between 0-1 and represent percentage of RADIUS
         """
         start = start * self.RADIUS
         stop = stop * self.RADIUS
