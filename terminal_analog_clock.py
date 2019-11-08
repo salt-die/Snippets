@@ -1,3 +1,10 @@
+"""
+An analog clock for your terminal!
+
+The grid and base arrays in Clock are dtype=int, but this might make more sense if we just
+use character arrays instead -- we may update this soon.
+"""
+
 import os
 import time
 import numpy as np
@@ -80,11 +87,11 @@ class Clock:
         for theta in np.linspace(0, 2 * np.pi, 100, endpoint=False):
             self.line_segment(theta, start=.95, stop=1, value=2)
 
-        i = True
+        i = 0
         # Ticks
         for theta in np.linspace(0, 2 * np.pi, 12, endpoint=False):
-            self.line_segment(theta, start=.8 - .1 * i, stop=1, value=2)
-            i = not i
+            self.line_segment(theta, start=.8 - (0  if i % 3 else .1), stop=1, value=2)
+            i = i + 1
 
     def draw_hands(self):
         hours, minutes, seconds = time.localtime()[3:6]
