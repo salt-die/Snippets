@@ -27,4 +27,6 @@ your set to a list beforehand
 
 * pendulums.py demonstrates pendulum "waves" that appear when pendulums have different lengths
 
-* RecursionLimit.py is a context manager for temporarily change the recursion limit
+* RecursionLimit.py is a context manager for temporarily changing the recursion limit
+
+* terminal_analog_clock.py is an analog clock drawn rendered in ascii for your terminal
