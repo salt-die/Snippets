@@ -82,7 +82,7 @@ class Clock:
 
         i = True
         # Ticks
-        for theta in np.linspace(0, 2 * np.pi, 24, endpoint=False):
+        for theta in np.linspace(0, 2 * np.pi, 12, endpoint=False):
             self.line_segment(theta, start=.8 - .1 * i, stop=1, value=2)
             i = not i
 
