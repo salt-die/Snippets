@@ -41,7 +41,6 @@ class Clock:
     RADIUS = 23
     CENTER = np.array((RADIUS, RADIUS))
 
-
     def __init__(self):
         self.grid = np.pad(np.zeros((self.RADIUS * 2, ) * 2, dtype=int), pad_width=1,
                            mode='constant', constant_values=1)
@@ -97,14 +96,14 @@ class Clock:
         hours, minutes, seconds = time.localtime()[3:6]
         tau = 2 * np.pi
         hours = (hours + minutes / 60) % 12
-        self.line_segment(angle=tau * hours / 12, start=0, stop=.4, value=5)
-        self.line_segment(angle=tau * minutes / 60, start=0, stop=.65, value=4)
-        self.line_segment(angle=tau * seconds / 60, start=0, stop=.65, value=3)
+        for angle, stop, value in ((seconds / 60, .65, 3),
+                                   (minutes / 60, .65, 4),
+                                   (hours / 12, .4, 5)):
+            self.line_segment(tau * angle, 0, stop, value)
 
     def run(self):
         while True:
             self.reset()
-
             self.draw_hands()
             self.grid[31:34, 11:35] = digital_time()
             time.sleep(1)
