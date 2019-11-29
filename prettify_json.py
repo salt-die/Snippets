@@ -25,7 +25,7 @@ def prettyjson(obj, width=95, scope=0, buffer=0):
             line = []
             for key, value in obj.items():
                 key = stringify(key)
-                line.append(f'{key}: {prettyjson(value, width, scope + 1, len(key) + 2)}')
+                line.append(f'{key}: {prettyjson(value, width, scope + 1, buffer + len(key) + 2)}')
             line = f'{"{"}{joiner.join(line)}{"}"}'
             if len(line) <= width:
                 break
