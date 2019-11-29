@@ -30,3 +30,6 @@ your set to a list beforehand
 * RecursionLimit.py is a context manager for temporarily changing the recursion limit
 
 * terminal_analog_clock.py is an analog clock drawn rendered in ascii for your terminal
+
+* prettify_json.py compactifies json files by using more horizontal line space; test.json
+and test_prettified.json show a before and after
