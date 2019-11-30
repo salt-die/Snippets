@@ -4,7 +4,7 @@ def prettify(file):
     """
     Turn an ugly json into a prettier one.
 
-    '.json' is left off of file for my convenience.
+    '.json' is left off of file for m̶y̶  your convenience.
     """
     with open(file + ".json", "r") as pre_parsed:
         json_to_parse = json.load(pre_parsed)
