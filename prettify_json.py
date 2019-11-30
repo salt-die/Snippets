@@ -17,19 +17,15 @@ def prettyjson(obj, width=95, buffer=0):
         return stringify(obj)
 
     joiners = ', ', f',\n{" " * (buffer + 1)}'
-    if isinstance(obj, dict):
-        for joiner in joiners:
+    for joiner in joiners:
+        if isinstance(obj, dict):
             line = []
             for key, value in obj.items():
                 key = stringify(key)
                 line.append(f'{key}: {prettyjson(value, width, buffer + len(key) + 3)}')
             line = f'{"{"}{joiner.join(line)}{"}"}'
-            if len(line) <= width:
-                break
-        return line
-
-    for joiner in joiners:
-        line = f'[{joiner.join(prettyjson(item, width, buffer + 1) for item in obj)}]'
+        else:
+            line = f'[{joiner.join(prettyjson(item, width, buffer + 1) for item in obj)}]'
         if len(line) <= width:
             break
     return line
