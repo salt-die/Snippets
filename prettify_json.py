@@ -6,13 +6,8 @@ def prettify(file):
 
     '.json' is left off of file for m̶y̶  your convenience.
     """
-    with open(file + ".json", "r") as pre_parsed:
-        json_to_parse = json.load(pre_parsed)
-
-    parsed = prettyjson(json_to_parse)
-
-    with open(file + "_prettified.json", "w") as rewrite:
-        rewrite.write(parsed)
+    with open(f'{file}.json', "r") as ugly, open(f'{file}_prettified.json', "w") as pretty:
+        pretty.write(prettyjson(json.load(ugly)))
 
 def prettyjson(obj, width=95, buffer=0):
     """
