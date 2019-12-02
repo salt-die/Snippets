@@ -16,19 +16,20 @@ def prettyjson(obj, width=95, buffer=0):
     if not isinstance(obj, (dict, list, tuple)):
         return stringify(obj)
 
+    if isinstance(obj, dict):
+        open_, close, line = *'{}', []
+        for key, value in obj.items():
+            key = stringify(key)
+            line.append(f'{key}: {prettyjson(value, width, buffer + len(key) + 3)}')
+    else:
+        open_, close, line = *'[]', [prettyjson(item, width, buffer + 1) for item in obj]
+
     joiners = ', ', f',\n{" " * (buffer + 1)}'
     for joiner in joiners:
-        if isinstance(obj, dict):
-            line = []
-            for key, value in obj.items():
-                key = stringify(key)
-                line.append(f'{key}: {prettyjson(value, width, buffer + len(key) + 3)}')
-            line = f'{"{"}{joiner.join(line)}{"}"}'
-        else:
-            line = f'[{joiner.join(prettyjson(item, width, buffer + 1) for item in obj)}]'
-        if len(line) <= width:
+        joined = f'{open_}{joiner.join(line)}{close}'
+        if len(joined) <= width:
             break
-    return line
+    return joined
 
 def stringify(obj):
     if isinstance(obj, str):
