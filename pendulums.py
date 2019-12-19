@@ -5,10 +5,10 @@ import pygame
 DIM = 800
 FORECOLOR = 193, 169, 13
 BACKCOLOR = 17, 107, 156
-MAX_RADIUS = 55
+MAX_RADIUS = 60
 NUMBER_OF_PENDULUMS = 20
-pendulums = list(range(MAX_RADIUS - NUMBER_OF_PENDULUMS - 1, MAX_RADIUS))
-START_ANGLE = np.pi / 3
+pendulums = [MAX_RADIUS - n for n in range(NUMBER_OF_PENDULUMS)]
+START_ANGLE = np.pi / 4
 TIME_DELTA = np.pi / 200
 
 #But Leave these alone
