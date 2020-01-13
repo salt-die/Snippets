@@ -8,7 +8,7 @@ WIDTH, HEIGHT = 512, 512
 ITERATIONS = 256
 
 xs = np.linspace(LEFT, RIGHT, WIDTH)
-ys = np.linspace(BOTTOM, TOP, HEIGHT)
+ys = np.linspace(TOP, BOTTOM, HEIGHT)
 xs, ys = np.meshgrid(xs, ys)
 C = xs + ys * 1j
 
