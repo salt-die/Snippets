@@ -11,3 +11,4 @@ images = [imageio.imread(os.path.join(png_dir, file_name))
           for file_name in sorted(os.listdir(png_dir))
           if file_name.endswith('.png')]
 imageio.mimsave(png_dir + 'title.gif', images, duration = .1)
+

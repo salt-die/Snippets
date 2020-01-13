@@ -33,3 +33,5 @@ your set to a list beforehand
 
 * prettify_json.py compactifies json files by using more horizontal line space; test.json
 and test_prettified.json show a before and after
+
+* numpy_mandelbrot.py produces an image of the mandelbrot set with numpy
