@@ -21,11 +21,11 @@ for i in range(1, ITERATIONS):
 
 
 #Coloring
-escapes %= 16
-R = [66, 25, 9, 4, 0, 12, 24, 57, 134, 211, 241, 248, 255, 204, 153, 106]
-G = [30, 7, 1, 4, 7, 44, 82, 125, 181, 236, 233, 201, 170, 128, 87, 52]
-B = [15, 26, 47, 73, 100, 138, 177, 209, 229, 248, 191, 95, 0, 0, 0, 3]
-
-RGB = [np.where(escapes, arr[escapes], 0) for arr in map(np.array, (R, G, B))]
-image = Image.fromarray(np.dstack(RGB).astype(np.uint8))
+escapes = np.where(escapes, escapes % 16, -1)
+R = [66, 25,  9,  4,   0,  12,  24,  57, 134, 211, 241, 248, 255, 204, 153, 106, 0]
+G = [30,  7,  1,  4,   7,  44,  82, 125, 181, 236, 233, 201, 170, 128,  87,  52, 0]
+B = [15, 26, 47, 73, 100, 138, 177, 209, 229, 248, 191,  95,   0,   0,   0,   3, 0]
+RGB = np.stack((R, G, B), axis=1)
+color_escapes = RGB[escapes]
+image = Image.fromarray(color_escapes.astype(np.uint8))
 image.show()
