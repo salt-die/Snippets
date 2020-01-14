@@ -19,7 +19,6 @@ for i in range(1, ITERATIONS):
     Z = np.where(escapes, 0, Z**2 + C)
     escapes[np.abs(Z) > 2] = i
 
-
 #Coloring
 escapes = np.where(escapes, escapes % 16, -1)
 R = [66, 25,  9,  4,   0,  12,  24,  57, 134, 211, 241, 248, 255, 204, 153, 106, 0]
