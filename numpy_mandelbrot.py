@@ -25,6 +25,6 @@ R = [66, 25,  9,  4,   0,  12,  24,  57, 134, 211, 241, 248, 255, 204, 153, 106,
 G = [30,  7,  1,  4,   7,  44,  82, 125, 181, 236, 233, 201, 170, 128,  87,  52, 0]
 B = [15, 26, 47, 73, 100, 138, 177, 209, 229, 248, 191,  95,   0,   0,   0,   3, 0]
 RGB = np.stack((R, G, B), axis=1)
-color_escapes = RGB[escapes]
-image = Image.fromarray(color_escapes.astype(np.uint8))
+colored_escapes = RGB[escapes].astype(np.uint8)
+image = Image.fromarray(colored_escapes)
 image.show()
