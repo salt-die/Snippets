@@ -36,8 +36,8 @@ class MultiSetch:
         self.remove(item)
         return item
 
-    def __bool__(self):
-        return bool(self.items)
+    def __len__(self):
+        return len(self.items)
 
     def __contains__(self, item):
         return item in self._item_to_position
