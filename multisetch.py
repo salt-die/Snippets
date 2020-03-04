@@ -11,24 +11,24 @@ from random import choice
 class MultiSetch:
     def __init__(self, *items):
         self._item_to_position = defaultdict(list)
-        self.items = []
+        self._items = []
         for item in items:
             self.add(item)
 
     def add(self, item):
-        self.items.append(item)
-        self._item_to_position[item].append(len(self.items) - 1)
+        self._item_to_position[item].append(len(self._items))
+        self._items.append(item)
 
     def remove(self, item):
         position = self._item_to_position[item].pop()
-        last_item = self.items.pop()
-        if position != len(self.items):
+        last_item = self._items.pop()
+        if position != len(self._items):
             self._item_to_position[last_item].pop()
-            self.items[position] = last_item
+            self._items[position] = last_item
             self._item_to_position[last_item].append(position)
 
     def choose(self):
-        return choice(self.items)
+        return choice(self._items)
 
     def pop(self):
         """Pop a random item."""
@@ -37,13 +37,13 @@ class MultiSetch:
         return item
 
     def __len__(self):
-        return len(self.items)
+        return len(self._items)
 
     def __contains__(self, item):
         return item in self._item_to_position
 
     def __iter__(self):
-        return iter(self.items)
+        return iter(self._items)
 
     def __repr__(self):
-        return f'MultiSetch({{{", ".join(map(str, self.items))}}})'
+        return f'MultiSetch({{{", ".join(map(str, self._items))}}})'
