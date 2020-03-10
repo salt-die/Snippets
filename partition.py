@@ -27,7 +27,7 @@ def partitions(n, m=None):
 
     for m0 in range(start, 0, -1):
         for subpartition in partitions(n - m0, m0):
-            yield [size] + subpartition
+            yield [m0] + subpartition
 
 def sized_partitions(n, k, m=None):
     """Partition n into k parts with a max part of m."""
