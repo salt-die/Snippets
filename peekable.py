@@ -32,7 +32,6 @@ class peekable:
                 if default is NULL: raise StopIteration
                 self.peeked.append(default)
 
-        if n == 1: return self.peeked[0]
         return tuple(map(self.peeked.__getitem__, range(n)))
 
     def __bool__(self):
