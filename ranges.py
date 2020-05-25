@@ -1,3 +1,7 @@
+"""Continuous Range implementation -- Along with a dictionary-like object for quickly finding
+which Range contains a key.
+"""
+
 from bisect import bisect_left, bisect_right, insort
 from contextlib import suppress
 from functools import wraps
