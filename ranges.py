@@ -5,7 +5,7 @@ from functools import wraps
 
 class ImmutableError(Exception): pass
 
-
+# It may make more sense to use an empty RangeSet instead.
 class EMPTYRANGE:
     def __contains__(self, other):
         return False
@@ -18,10 +18,9 @@ class EMPTYRANGE:
 
 EMPTYRANGE = EMPTYRANGE()
 
-
+# There are fewer endpoint conditions to check if we ensure order.
 def ensure_order(func):
-    """Raise error if other isn't an instance of Range. If not self <= other, call other.func(self).
-    There are fewer endpoint conditions to check if we ensure order.
+    """Raise error if other isn't an instance of Range and call other.func(self) if self < other.
     """
     @wraps(func)
     def wrapper(self, other):
@@ -145,14 +144,17 @@ class RangeDict:
                 self[key] = value
 
     def __setitem__(self, key, value):
-        """Keep ranges sorted as we insert them.
+        """Keep ranges sorted as we insert them and check that neighboring ranges are disjoint.
         """
         if key not in self._range_to_value:
+
             i = bisect_right(self._ranges, key)
+
             with suppress(IndexError):
                 if self._ranges[i].intersects(key) or self._ranges[i - 1].intersects(key):
                     raise ValueError(f'{key} is not disjoint from other Ranges')
             self._ranges.insert(i, key)
+
         self._range_to_value[key] = value
 
     def __getitem__(self, key):
@@ -181,7 +183,7 @@ class RangeDict:
 
 
 class RangeSet:
-    """A collection of disjoint Ranges."""
+    """A collection of mutually disjoint Ranges."""
     def __init__(self, *ranges):
         NotImplemented
 
