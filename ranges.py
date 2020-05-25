@@ -106,12 +106,12 @@ class Range:
         """Return true if either self.end == other.start or self.start == other.end
         and one point is inclusive and the other is exclusive.
         """
-        return self.end == other.start and self.end_inc != other.start_inc
+        return self.end_inc != other.start_inc and self.end == other.start
 
     @ensure_order
     def intersects(self, other):
         """Return true if the intersection with 'other' isn't empty."""
-        return other.start in self and (other.start_inc or other.start != self.end)
+        return self.end in other and not self.continues(other) or self.end > other
 
     @ensure_order
     def __or__(self, other):
