@@ -195,10 +195,20 @@ class RangeSet:
 
 if __name__ == '__main__':
     r = RangeDict({Range('[90, 100]'): 'A',
-                   Range(80, 90): 'B',
-                   Range(70, 80): 'C',
-                   Range(60, 70): 'D',
-                   Range(0 , 60): 'F'})
+                   Range(  80,  90  ): 'B',
+                   Range(  70,  80  ): 'C',
+                   Range(  60,  70  ): 'D',
+                   Range(   0,  60  ): 'F'})
     assert r[85] == 'B'
     assert r[90] == 'A'
-    assert r[0] == 'F'
+    assert r[ 0] == 'F'
+
+    a = Range(0, 1)
+    b = Range(1, 2)
+    c = Range(0, 2)
+
+    assert a | c == c
+    assert a & c == a
+
+    assert a | b == c
+    assert a & b == EMPTYRANGE
