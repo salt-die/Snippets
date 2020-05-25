@@ -21,7 +21,7 @@ EMPTYRANGE = EMPTYRANGE()
 
 # There are fewer endpoint conditions to check if we ensure order.
 def ensure_order(func):
-    """Raise error if other isn't an instance of Range and call other.func(self) if self < other.
+    """Raise error if other isn't an instance of Range and call other.func(self) if other < self.
     """
     @wraps(func)
     def wrapper(self, other):
