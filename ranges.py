@@ -5,7 +5,7 @@ from functools import wraps
 
 class ImmutableError(Exception): pass
 
-# It may make more sense to use an empty RangeSet instead.
+
 class EMPTYRANGE:
     def __contains__(self, other):
         return False
@@ -15,6 +15,7 @@ class EMPTYRANGE:
         return False
     def __repr__(self):
         return '∅'
+
 
 EMPTYRANGE = EMPTYRANGE()
 
