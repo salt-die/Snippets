@@ -1,4 +1,5 @@
 from bisect import bisect_left, bisect_right, insort
+from contextlib import suppress
 from functools import wraps
 
 
@@ -135,26 +136,29 @@ class Range:
 
 
 class RangeDict:
-    def __init__(self, dict_):
+    def __init__(self, dict_=None):
         self._ranges = []
         self._range_to_value = {}
 
-        for key, value in dict_.items():
-            self.__setitem__(key, value)
+        if dict_ is not None:
+            for key, value in dict_.items():
+                self[key] = value
 
     def __setitem__(self, key, value):
         """Keep ranges sorted as we insert them.
-        TODO: Make sure ranges are disjoint.
         """
         if key not in self._range_to_value:
-            insort(self._ranges, key)
+            i = bisect_right(self._ranges, key)
+            with suppress(IndexError):
+                if self._ranges[i].intersects(key) or self._ranges[i - 1].intersects(key):
+                    raise ValueError(f'{key} is not disjoint from other Ranges')
+            self._ranges.insert(i, key)
         self._range_to_value[key] = value
 
     def __getitem__(self, key):
         """Binary search the ranges for one that may contain the key."""
         ranges = self._ranges
         values = self._range_to_value
-
         while ranges:
             i = bisect_left(ranges, key)
             if key in ranges[i]:
