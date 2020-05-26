@@ -11,8 +11,7 @@ class SwitchMeta(type):
         funcs = cases.get(value, default)
 
         for func in funcs:
-            is_generator = func()
-            if is_generator:
+            if is_generator := func():
                 return next(is_generator)
 
     def __prepare__(name, *args):
@@ -38,7 +37,7 @@ class switch(metaclass=SwitchMeta): pass
 
 
 if __name__ == "__main__":
-    class myswitch(switch):
+    class my_switch(switch):
         @case(1)
         def _():
             print(1)
