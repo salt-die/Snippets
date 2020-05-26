@@ -55,9 +55,10 @@ if __name__ == "__main__":
         def _():
             print(3)
 
+        @case(4)
         @case('a')
         def _():
-            print('a')
+            print(4, 'or a')
 
         @case('default')
         def _():
