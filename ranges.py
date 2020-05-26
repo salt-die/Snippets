@@ -54,8 +54,9 @@ def ensure_order(func):
             raise ValueError(f'{other} not an instance of Range')
 
         if other < self:
-            self, other = other, self
+            return getattr(other, func.__name__)(self)
         return func(self, other)
+
     return wrapper
 
 def from_string(str_):
