@@ -1,10 +1,10 @@
 """Continuous Range implementation -- Along with a dictionary-like object for quickly finding
 which Range contains a key.
 """
-# TODO: Implement custom inf and -inf so we can invert Ranges
+# TODO: Implement custom inf and -inf so we can invert Ranges, possibly change default arguments to -inf, inf
 #  ...: Implement symmetric difference, subset, superset
-#  ...: Finish RangeSet implementation
-#  ...:     All Range operations should be implemented on RangeSet, but care needs
+#  ...: Finish RangeSet implementation:
+#  ...:    All Range operations should be implemented on RangeSet, but care needs
 #  ...:    needs to be taken to stay O(n) where possible.
 from bisect import bisect_left, bisect_right, insort
 from contextlib import suppress
