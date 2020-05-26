@@ -19,13 +19,13 @@ class SwitchMeta(type):
         funcs_to_vals = {}
 
         def case(val):
-            cases[val] = []
-
             def deco(func):
                 if func in funcs_to_vals:
                     cases[val] = cases[funcs_to_vals[func]].copy()
                 else:
+                    cases[val] = []
                     funcs_to_vals[func] = val
+
                     for case in cases:
                         cases[case].append(func)
 
