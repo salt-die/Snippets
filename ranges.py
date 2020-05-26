@@ -1,35 +1,42 @@
 """Continuous Range implementation -- Along with a dictionary-like object for quickly finding
 which Range contains a key.
 """
-
 from bisect import bisect_left, bisect_right, insort
 from contextlib import suppress
 from functools import wraps
 
-
 class ImmutableError(Exception): pass
 
-
-class EMPTYRANGE:
-    def __contains__(self, other):
-        return False
+class Immutable:
     def __setattr__(self, attr, value):
         raise ImmutableError(f"cannot assign to '{attr}'")
-    def intersects(self, other):
-        return False
-    def __repr__(self):
-        return '∅'
 
+class RangeBase(Immutable):
+    """Annotative base class."""
 
-EMPTYRANGE = EMPTYRANGE()
+class EMPTY_RANGE(RangeBase):
+    def __contains__(self, other): return False
+    def intersects(self, other): return False
+    def __lt__(self, other): return True
+    def __gt__(self, other): return True
+    def __or__(self, other): return other
+    def __and__(self, other): return self
+    def __repr__(self): return '∅'
 
-# There are fewer endpoint conditions to check if we ensure order.
+EMPTY_RANGE = EMPTY_RANGE()
+
+class RangeMeta(type):
+    def __call__(cls, start=None, end=None, /, start_inc=True, end_inc=False):
+        """return EMPTY_RANGE for calls to Range with no arguments."""
+        if start is None: return EMPTY_RANGE
+        return super().__call__(start, end, start_inc, end_inc)
+
 def ensure_order(func):
-    """Raise error if other isn't an instance of Range and call other.func(self) if other < self.
+    """Raise error if other isn't an instance of RangeBase and call other.func(self) if other < self.
     """
     @wraps(func)
     def wrapper(self, other):
-        if not isinstance(other, Range):
+        if not isinstance(other, RangeBase):
             raise ValueError(f'{other} not an instance of Range')
 
         if other < self:
@@ -37,11 +44,10 @@ def ensure_order(func):
         return func(self, other)
     return wrapper
 
-
-class Range:
+class Range(RangeBase, metaclass=RangeMeta):
     __slots__ = 'start', 'end', 'start_inc', 'end_inc', '_cmp', '_hash'
 
-    def __init__(self, start, end=None, start_inc=True, end_inc=False):
+    def __init__(self, start=None, end=None, start_inc=True, end_inc=False):
         if isinstance(start, str):
             start_inc = start[0] == '['
             end_inc = start[-1] == ']'
@@ -49,7 +55,8 @@ class Range:
 
         try:
             if start > end:
-                raise ValueError('start must be less than or equal to end')
+                start, end = end, start
+                start_inc, end_inc = end_inc, start_inc
             elif start == end and not (start_inc and end_inc):
                 raise ValueError('range must be inclusive if start equals end')
         except TypeError:
@@ -59,7 +66,7 @@ class Range:
         hash_ = hash(cmp)
 
         for name, val in zip(self.__slots__, (start, end, start_inc, end_inc, cmp, hash_)):
-            super().__setattr__(name, val)
+            super(Immutable, type(self)).__setattr__(self, name, val)
 
     def __lt__(self, other):
         if isinstance(other, Range):
@@ -87,10 +94,6 @@ class Range:
     def __hash__(self):
         return self._hash
 
-    def __setattr__(self, attr, value):
-        """Force immutability."""
-        raise ImmutableError(f"cannot assign to '{attr}'")
-
     def __contains__(self, value):
         """Return true if value is in the range."""
         try:
@@ -111,27 +114,27 @@ class Range:
     @ensure_order
     def intersects(self, other):
         """Return true if the intersection with 'other' isn't empty."""
-        return self.end in other and not self.continues(other) or self.end > other
+        return other.start in self and not self.continues(other)
 
     @ensure_order
     def __or__(self, other):
         """Returns union of two Ranges."""
-        if not (self.intersects(other) or self.continues(other)):
-            return RangeSet(self, other)
-
         if self.end > other:
             return self
+
+        if not (self.intersects(other) or self.continues(other)):
+            return RangeSet(self, other)
 
         return Range(self.start, other.end, self.start_inc, other.end_inc)
 
     @ensure_order
     def __and__(self, other):
         """Returns intersection of two Ranges."""
-        if not self.intersects(other):
-            return EMPTYRANGE
-
         if self.end > other:
             return other
+
+        if not self.intersects(other):
+            return EMPTY_RANGE
 
         return Range(other.start, self.end, other.start_inc, self.end_inc)
 
@@ -149,7 +152,7 @@ class RangeDict:
                 self[key] = value
 
     def __setitem__(self, key, value):
-        """Keep ranges sorted as we insert them and check that neighboring ranges are disjoint.
+        """Keep ranges sorted as we insert them. Raise ValueError if key is not disjoint to its neighbors.
         """
         if key not in self._range_to_value:
 
@@ -211,4 +214,4 @@ if __name__ == '__main__':
     assert a & c == a
 
     assert a | b == c
-    assert a & b == EMPTYRANGE
+    assert a & b == EMPTY_RANGE
