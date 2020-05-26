@@ -87,7 +87,7 @@ class Range(RangeBase):
             start, end, start_inc, end_inc = from_string(start)
 
         if start is None:
-            start = MINUS_INF
+            start = -INF
             start_inc = False
         if end is None:
             end = INF
