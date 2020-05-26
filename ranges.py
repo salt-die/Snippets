@@ -1,6 +1,11 @@
 """Continuous Range implementation -- Along with a dictionary-like object for quickly finding
 which Range contains a key.
 """
+# TODO: Implement custom inf and -inf so we can invert Ranges
+#  ...: Implement symmetric difference, subset, superset
+#  ...: Finish RangeSet implementation
+#  ...:     All Range operations should be implemented on RangeSet, but care needs
+#  ...:    needs to be taken to stay O(n) where possible.
 from bisect import bisect_left, bisect_right, insort
 from contextlib import suppress
 from functools import wraps
@@ -32,7 +37,7 @@ class RangeMeta(type):
         return super().__call__(start, end, start_inc, end_inc)
 
 def ensure_order(func):
-    """Raise error if other isn't an instance of RangeBase and call other.func(self) if other < self.
+    """Raise error if other isn't an instance of RangeBase and switch other, self if other < self.
     """
     @wraps(func)
     def wrapper(self, other):
@@ -40,7 +45,7 @@ def ensure_order(func):
             raise ValueError(f'{other} not an instance of Range')
 
         if other < self:
-            return getattr(other, func.__name__)(self)
+            self, other = other, self
         return func(self, other)
     return wrapper
 
@@ -48,7 +53,7 @@ class Range(RangeBase, metaclass=RangeMeta):
     __slots__ = 'start', 'end', 'start_inc', 'end_inc', '_cmp', '_hash'
 
     def __init__(self, start=None, end=None, start_inc=True, end_inc=False):
-        if isinstance(start, str):
+        if isinstance(start, str) and end is None:
             start_inc = start[0] == '['
             end_inc = start[-1] == ']'
             start, end = map(float, start[1:-1].split(','))
