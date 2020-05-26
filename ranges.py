@@ -1,8 +1,7 @@
 """Continuous Range implementation -- Along with a dictionary-like object for quickly finding
 which Range contains a key.
 """
-# TODO: Implement custom inf and -inf so we can invert Ranges, possibly change default arguments to -inf, inf
-#  ...: Implement symmetric difference, subset, superset
+# TODO: Implement __invert__, symmetric difference, subset, superset
 #  ...: Finish RangeSet implementation:
 #  ...:    All Range operations should be implemented on RangeSet, but care needs
 #  ...:    needs to be taken to stay O(n) where possible.
@@ -16,6 +15,20 @@ class Immutable:
     def __setattr__(self, attr, value):
         raise ImmutableError(f"cannot assign to '{attr}'")
 
+class INF(Immutable):
+    def __lt__(self, other): return False
+    def __gt__(self, other): return True
+    def __neg__(self): return MINUS_INF
+    def __repr__(self): return '∞'
+    def __hash__(self): return hash(float('inf'))
+
+class MINUS_INF(Immutable):
+    def __lt__(self, other): return True
+    def __gt__(self, other): return False
+    def __neg__(self): return INF
+    def __repr__(self): return '-∞'
+    def __hash__(self): return hash(-float('inf'))
+
 class RangeBase(Immutable):
     """Annotative base class."""
 
@@ -28,13 +41,9 @@ class EMPTY_RANGE(RangeBase):
     def __and__(self, other): return self
     def __repr__(self): return '∅'
 
+INF = INF()
+MINUS_INF = MINUS_INF()
 EMPTY_RANGE = EMPTY_RANGE()
-
-class RangeMeta(type):
-    def __call__(cls, start=None, end=None, /, start_inc=True, end_inc=False):
-        """return EMPTY_RANGE for calls to Range with no arguments."""
-        if start is None: return EMPTY_RANGE
-        return super().__call__(start, end, start_inc, end_inc)
 
 def ensure_order(func):
     """Raise error if other isn't an instance of RangeBase and switch other, self if other < self.
@@ -49,14 +58,39 @@ def ensure_order(func):
         return func(self, other)
     return wrapper
 
-class Range(RangeBase, metaclass=RangeMeta):
+def from_string(str_):
+    start, end = str_[1:-1].split(',')
+    start = start.strip()
+    end = end.strip()
+    if start == '-inf':
+        start = -INF
+        start_inc = False
+    else:
+        start = int(start) if start.isdigit() else float(start)
+        start_inc = str_[0] == '['
+
+    if end == 'inf':
+        end = INF
+        end_inc = False
+    else:
+        end = int(end) if end.isdigit() else float(end)
+        end_inc = str_[-1] == ']'
+    return start, end, start_inc, end_inc
+
+class Range(RangeBase):
     __slots__ = 'start', 'end', 'start_inc', 'end_inc', '_cmp', '_hash'
 
-    def __init__(self, start=None, end=None, start_inc=True, end_inc=False):
-        if isinstance(start, str) and end is None:
-            start_inc = start[0] == '['
-            end_inc = start[-1] == ']'
-            start, end = map(float, start[1:-1].split(','))
+    def __init__(self, start=None, end=None, /, start_inc=True, end_inc=False):
+        # Try to construct from string
+        with suppress(TypeError, ValueError, IndexError):
+            start, end, start_inc, end_inc = from_string(start)
+
+        if start is None:
+            start = MINUS_INF
+            start_inc = False
+        if end is None:
+            end = INF
+            end_inc = False
 
         try:
             if start > end:
