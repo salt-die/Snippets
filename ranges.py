@@ -194,12 +194,13 @@ class RangeDict:
         """Keep ranges sorted as we insert them. Raise ValueError if key is not disjoint to its neighbors.
         """
         if key not in self._range_to_value:
-
             i = bisect_right(self._ranges, key)
 
-            with suppress(IndexError):
-                if self._ranges[i].intersects(key) or self._ranges[i - 1].intersects(key):
-                    raise ValueError(f'{key} is not disjoint from other Ranges')
+            for n in (i, i - 1):
+                with suppress(IndexError):
+                    if self._ranges[n].intersects(key):
+                        raise ValueError(f'{key} is not disjoint from other Ranges')
+
             self._ranges.insert(i, key)
 
         self._range_to_value[key] = value
