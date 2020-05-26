@@ -15,15 +15,22 @@ class SwitchMeta(type):
                 return next(is_generator)
 
     def __prepare__(name, *args):
-        cases = {}
-        _name_to_cases[name] = cases
+        _name_to_cases[name] = cases = {}
+        funcs_to_vals = {}
 
         def case(val):
+            cases[val] = []
+
             def deco(func):
-                cases[val] = []
-                for case in cases:
-                    cases[case].append(func)
+                if func in funcs_to_vals:
+                    cases[val] = cases[funcs_to_vals[func]].copy()
+                else:
+                    funcs_to_vals[func] = val
+                    for case in cases:
+                        cases[case].append(func)
+
                 return func
+
             return deco
 
         return ChainMap({}, {'case': case})
@@ -39,8 +46,9 @@ class switch(metaclass=SwitchMeta): pass
 if __name__ == "__main__":
     class my_switch(switch):
         @case(1)
+        @case(2)
         def _():
-            print(1)
+            print(1, 'or', 2)
             yield 20  # yield to break
 
         @case(3)
