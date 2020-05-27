@@ -281,6 +281,9 @@ class RangeSet:
 
     def add(self, range_):
         """Keep ranges sorted as we add them, and merge intersecting ranges."""
+        if range_ is EMPTY_RANGE:
+            return
+
         ranges = self._ranges
 
         start = bisect(ranges, range_.start)
@@ -326,3 +329,8 @@ if __name__ == '__main__':
 
     assert a | b == c
     assert a & b == EMPTY_RANGE
+
+    s = RangeSet()
+    s.add(a)
+    s.add(b)
+    assert s._ranges == [c]  # no __contains__ yet :(
