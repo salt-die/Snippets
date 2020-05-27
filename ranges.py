@@ -5,6 +5,7 @@ which Range contains a key.
 #  ...: Finish RangeSet implementation:
 #  ...:    All Range operations should be implemented on RangeSet, but care needs
 #  ...:    needs to be taken to avoid O(n**2) trap.
+#  ...: Implement __delitem__ in RangeDict
 from bisect import bisect, insort
 from contextlib import suppress
 from functools import wraps
