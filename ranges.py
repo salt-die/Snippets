@@ -263,8 +263,9 @@ class RangeDict:
         ranges = self._ranges
 
         i = bisect(ranges, key) - 1
-        if key in ranges[i]:
-            return self._range_to_value[ranges[i]]
+        with suppress(IndexError):
+            if key in ranges[i]:
+                return self._range_to_value[ranges[i]]
 
         raise KeyError(key)
 
@@ -281,6 +282,9 @@ class RangeSet:
 
     def add(self, range_):
         """Keep ranges sorted as we add them, and merge intersecting ranges."""
+        if not isinstance(range_, RangeBase):
+            raise ValueError("expected Range, got {type(range_).__name__}")
+
         if range_ is EMPTY_RANGE:
             return
 
