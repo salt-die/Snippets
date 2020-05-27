@@ -5,7 +5,7 @@ which Range contains a key.
 #  ...: Finish RangeSet implementation:
 #  ...:    All Range operations should be implemented on RangeSet, but care needs
 #  ...:    needs to be taken to avoid O(n**2) trap.
-from bisect import bisect_left, bisect_right, insort
+from bisect import bisect, insort
 from contextlib import suppress
 from functools import wraps
 
@@ -159,15 +159,24 @@ class Range(RangeBase):
         return other.start in self and not self.continues(other)
 
     @ensure_order
+    def will_join(self, other):
+        """Return true if the union of self and other is a single contiguous range."""
+        return self.intersects(other) or self.continues(other)
+
+    @ensure_order
     def __or__(self, other):
         """Returns union of two Ranges."""
         if self.end > other:
             return self
 
-        if not (self.intersects(other) or self.continues(other)):
+        if not self.will_join(other):
             return RangeSet(self, other)
 
         return Range(self.start, other.end, self.start_inc, other.end_inc)
+
+    def __ior__(self, other):
+        """In place merge -- reminder that Ranges are immutable and this will return a new instance."""
+        return self.__or__(other)
 
     @ensure_order
     def __and__(self, other):
@@ -234,8 +243,11 @@ class RangeDict:
     def __setitem__(self, key, value):
         """Keep ranges sorted as we insert them. Raise ValueError if key is not disjoint to its neighbors.
         """
+        if not isinstance(key, RangeBase):
+            raise TypeError('key must be a Range')
+
         if key not in self._range_to_value:
-            i = bisect_right(self._ranges, key)
+            i = bisect(self._ranges, key)
 
             for n in (i, i - 1):
                 with suppress(IndexError):
@@ -249,21 +261,10 @@ class RangeDict:
     def __getitem__(self, key):
         """Binary search the ranges for one that may contain the key."""
         ranges = self._ranges
-        values = self._range_to_value
-        while ranges:
-            i = bisect_left(ranges, key)
-            if key in ranges[i]:
-                return values[ranges[i]]
 
-            ranges = ranges[i + 1:]
-            if not ranges:
-                break
-
-            i = bisect_right(ranges, key) - 1
-            if key in ranges[i]:
-                return values[ranges[i]]
-
-            ranges = ranges[:i]
+        i = bisect(ranges, key) - 1
+        if key in ranges[i]:
+            return self._range_to_value[ranges[i]]
 
         raise KeyError(key)
 
@@ -274,10 +275,35 @@ class RangeDict:
 class RangeSet:
     """A collection of mutually disjoint Ranges."""
     def __init__(self, *ranges):
-        self._ranges = list(ranges)
+        self._ranges = []
+        for range_ in ranges:
+            self.add(range_)
+
+    def add(self, range_):
+        """Keep ranges sorted as we add them, and merge intersecting ranges."""
+        ranges = self._ranges
+
+        start = bisect(ranges, range_.start)
+        end = bisect(ranges, range_.end)
+
+        if start and range_.will_join(ranges[start - 1]):
+            range_ |= ranges[start - 1]
+            start -= 1
+
+        if end < len(ranges) and range_.continues(ranges[end]):
+            range_ |= ranges[end]
+            end += 1
+        elif end and range_.will_join(ranges[end - 1]):
+            range_ |= ranges[end - 1]
+
+
+        if start == end:
+            ranges.insert(start, range_)
+        else:
+            ranges[start: end] = [range_]
 
     def __repr__(self):
-        return f'{{{", ".join(str(range_) for range_ in self._ranges)}}}'
+        return f'{{{", ".join(map(str, self._ranges))}}}'
 
 
 if __name__ == '__main__':
