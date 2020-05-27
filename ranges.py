@@ -1,10 +1,10 @@
 """Continuous Range implementation -- Along with a dictionary-like object for quickly finding
 which Range contains a key.
 """
-# TODO: Implement __invert__, symmetric difference, subset, superset
+# TODO: Implement subset, superset
 #  ...: Finish RangeSet implementation:
 #  ...:    All Range operations should be implemented on RangeSet, but care needs
-#  ...:    needs to be taken to stay O(n) where possible.
+#  ...:    needs to be taken to avoid O(n**2) trap.
 from bisect import bisect_left, bisect_right, insort
 from contextlib import suppress
 from functools import wraps
@@ -38,6 +38,8 @@ class EMPTY_RANGE(RangeBase):
     def __lt__(self, other): return True
     def __gt__(self, other): return True
     def __or__(self, other): return other
+    def __xor__(self, other): return other
+    def __invert__(self): return Range()
     def __and__(self, other): return self
     def __repr__(self): return '∅'
 
@@ -178,6 +180,44 @@ class Range(RangeBase):
 
         return Range(other.start, self.end, other.start_inc, self.end_inc)
 
+    @ensure_order
+    def __xor__(self, other):
+        """Symmetric difference of two Ranges.
+        Case 1: Non-intersecting
+        Case 2: Equal Ranges
+        Case 3: starts equal
+        Case 4: ends equal
+        Case 5:
+            a: different and intersecting, but self.end < other.end
+            b: different and intersecting, but self.end > other.end
+        """
+        if not self.intersects(other):
+            return RangeSet(self, other)
+
+        if self == other:
+            return EMPTY_RANGE
+
+        if self.start == other.start and self.start_inc == other.start_inc:
+            return Range(self.end, other.end, not self.end_inc, other.end_inc)
+
+        if self.end == other.end and self.end_inc == other.end_inc:
+            return Range(self.start, other.start, self.start_inc, not other.start_inc)
+
+        r1 = Range(self.start, other.start, self.start_inc, not other.start_inc)
+        if (self.end, self.end_inc) < (other.end, other.end_inc):
+            r2 = Range(self.end, other.end, not self.end_inc, other.end_inc)
+        else:
+            r2 = Range(other.end, self.end, not other.end_inc, self.end_inc)
+
+        return RangeSet(r1, r2)
+
+    def __invert__(self):
+        return Range() ^ self
+
+    def __iter__(self):
+        yield self.start, self.start_inc
+        yield self.end, self.end_inc
+
     def __repr__(self):
         return f'{"(["[self.start_inc]}{self.start}, {self.end}{")]"[self.end_inc]}'
 
@@ -234,7 +274,10 @@ class RangeDict:
 class RangeSet:
     """A collection of mutually disjoint Ranges."""
     def __init__(self, *ranges):
-        NotImplemented
+        self._ranges = list(ranges)
+
+    def __repr__(self):
+        return f'{{{", ".join(str(range_) for range_ in self._ranges)}}}'
 
 
 if __name__ == '__main__':
@@ -243,6 +286,7 @@ if __name__ == '__main__':
                    Range(  70,  80  ): 'C',
                    Range(  60,  70  ): 'D',
                    Range(   0,  60  ): 'F'})
+
     assert r[85] == 'B'
     assert r[90] == 'A'
     assert r[ 0] == 'F'

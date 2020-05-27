@@ -28,9 +28,7 @@ class SwitchMeta(type):
 
                     for case in cases:
                         cases[case].append(func)
-
                 return func
-
             return deco
 
         return ChainMap({}, {'case': case})
