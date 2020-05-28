@@ -55,9 +55,18 @@ def ensure_order(func):
     @wraps(func)
     def wrapper(self, other):
         if not isinstance(other, RangeBase):
-            raise ValueError(f'{other} not an instance of Range')
+            raise TypeError(f'{other} not an instance of Range')
 
         if other < self:
+            return getattr(other, func.__name__)(self)
+        return func(self, other)
+
+    return wrapper
+
+def defer_to_set(func):
+    @wraps(func)
+    def wrapper(self, other):
+        if isinstance(other, RangeSet):
             return getattr(other, func.__name__)(self)
         return func(self, other)
 
@@ -182,6 +191,7 @@ class Range(RangeBase):
         """In place merge -- reminder that Ranges are immutable and this will return a new instance."""
         return self.__or__(other)
 
+    @defer_to_set
     @ensure_order
     def __and__(self, other):
         """Returns intersection of two Ranges."""
