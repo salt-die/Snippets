@@ -36,7 +36,7 @@ class RangeBase(Immutable):
 class EMPTY_RANGE(RangeBase):
     def __contains__(self, other): return False
     def intersects(self, other): return False
-    def __lt__(self, other): return True
+    def __lt__(self, other): return False
     def __gt__(self, other): return True
     def __or__(self, other): return other
     def __xor__(self, other): return other
@@ -112,6 +112,8 @@ class Range(RangeBase):
             super(Immutable, type(self)).__setattr__(self, name, val)
 
     def __lt__(self, other):
+        """Ranges are compared by their least element first, this is why the EMPTY_RANGE is not less than anything --
+        it has no least element."""
         if isinstance(other, Range):
             return self._cmp < other._cmp
 
