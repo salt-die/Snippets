@@ -439,8 +439,8 @@ class RangeSet:
             if self_range.intersects(other_range):
                 dif = self_range ^ other_range
                 if isinstance(dif, Range):
-                    # If a xor returns a contiguous Range, we need to check ends to determine which
-                    # of the RangeSets we call next on.
+                    # If a xor returns a contiguous Range, we need to check ends
+                    # to determine which of the RangeSets we call next on (it may be both).
                     if dif.end > other_range:
                         self_range = dif
                         other_range = next(other_ranges, None)
@@ -448,22 +448,30 @@ class RangeSet:
                     elif dif.end > self_range:
                         other_range = dif
                     else:
-                        s.add(dif)
+                        s |= dif
                         other_range = next(other_ranges, None)
-                else:  # is a RangeSet
+                else:  # is a RangeSet, we add the least range and continue with the other
                     r1, r2 = dif
-                    s.add(r1)
+                    s |= r1
                     other_range = r2
+
             elif other_range.end < self_range:
-                s.add(other_range)
+                s |= other_range
                 other_range = next(other_ranges, None)
                 continue
+
             else:
-                s.add(self_range)
+                s |= self_range
+
             self_range = next(self_ranges, None)
 
+        # Collect left-overs
         if other_range:
-            s.add(other_range)
+            s |= other_range
+            s |= RangeSet(*other_ranges)
+        elif self_range:
+            s |= self_range
+            s |= RangeSet(*self_ranges)
         return s
 
     def __invert__(self):
