@@ -164,7 +164,7 @@ class Range(RangeBase):
     @ensure_order
     def will_join(self, other):
         """Return true if the union of self and other is a single contiguous range."""
-        return self.intersects(other) or self.continues(other)
+        return other.start in self or self.end in other
 
     @ensure_order
     def __or__(self, other):
