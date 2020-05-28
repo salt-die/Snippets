@@ -3,9 +3,10 @@ which Range contains a key.
 """
 # TODO: Implement subset, superset
 #  ...: Finish RangeSet implementation:
-#  ...:    All Range operations should be implemented on RangeSet, but care needs
-#  ...:    needs to be taken to avoid O(n**2) trap.
-#  ...: Implement __delitem__ in RangeDict
+#  ...:    __xor__
+#  ...:    __contains__
+#  ...:   ___invert__
+#  ...: __delitem__ for RangeDict
 from bisect import bisect, insort
 from contextlib import suppress
 from functools import wraps
@@ -295,7 +296,7 @@ class RangeDict:
         return f'{self.__class__.__name__}({self._range_to_value})'
 
 
-def check_type(func):
+def ensure_type(func):
     @wraps(func)
     def wrapper(self, other):
         if isinstance(other, RangeBase):
@@ -344,7 +345,7 @@ class RangeSet:
     def __iter__(self):
         yield from self._ranges
 
-    @check_type
+    @ensure_type
     def __and__(self, other):
         self_ranges = iter(self)
         current_cmp = next(self_ranges, None)
@@ -363,7 +364,7 @@ class RangeSet:
 
         return s
 
-    @check_type
+    @ensure_type
     def __or__(self, other):
         # There's a more sophisticated and faster version of this where we iterate over both sets much like
         # in __and__: implementing this will go on the TODO list.
