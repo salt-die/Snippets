@@ -295,6 +295,16 @@ class RangeDict:
         return f'{self.__class__.__name__}({self._range_to_value})'
 
 
+def check_type(func):
+    @wraps(func)
+    def wrapper(self, other):
+        if isinstance(other, RangeBase):
+            other = RangeSet(other)
+        elif not isinstance(other, RangeSet):
+            raise TypeError(f'expected Range or RangeSet got {type(other).__name__}')
+        return func(self, other)
+    return wrapper
+
 class RangeSet:
     """A collection of mutually disjoint Ranges."""
     def __init__(self, *ranges):
@@ -305,7 +315,7 @@ class RangeSet:
     def add(self, range_):
         """Keep ranges sorted as we add them, and merge intersecting ranges."""
         if not isinstance(range_, RangeBase):
-            raise ValueError(f'expected Range, got {type(range_).__name__}')
+            raise TypeError(f'expected Range, got {type(range_).__name__}')
 
         if range_ is EMPTY_RANGE:
             return
@@ -334,13 +344,8 @@ class RangeSet:
     def __iter__(self):
         yield from self._ranges
 
+    @check_type
     def __and__(self, other):
-        if isinstance(other, RangeBase):
-            other = RangeSet(other)
-
-        if not isinstance(other, RangeSet):
-            raise ValueError(f'expected Range or RangeSet got {type(other).__name__}')
-
         self_ranges = iter(self)
         current_cmp = next(self_ranges, None)
 
@@ -358,6 +363,19 @@ class RangeSet:
 
         return s
 
+    @check_type
+    def __or__(self, other):
+        # There's a more sophisticated and faster version of this where we iterate over both sets much like
+        # in __and__: implementing this will go on the TODO list.
+        s = self.copy()
+        for range_ in other:
+            s.add(range_)
+        return s
+
+    def copy(self):
+        s = RangeSet()
+        s._ranges = self._ranges.copy()
+        return s
 
     def __repr__(self):
         return f'{{{", ".join(map(str, self._ranges))}}}'
