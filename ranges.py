@@ -122,6 +122,10 @@ class Range(RangeBase):
         for name, val in zip(self.__slots__, (start, end, start_inc, end_inc, cmp, hash_)):
             super(Immutable, type(self)).__setattr__(self, name, val)
 
+    @property
+    def endpoints(self):
+        return self.start, self.end
+
     def __lt__(self, other):
         """Ranges are compared by their least element first, this is why the EMPTY_RANGE is not less than anything --
         it has no least element."""
