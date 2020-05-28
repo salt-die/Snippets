@@ -42,6 +42,7 @@ class EMPTY_RANGE(RangeBase):
     def __xor__(self, other): return other
     def __invert__(self): return Range()
     def __and__(self, other): return self
+    def __len__(self): return 0
     def __repr__(self): return '∅'
 
 INF = INF()
@@ -230,6 +231,14 @@ class Range(RangeBase):
         yield self.start, self.start_inc
         yield self.end, self.end_inc
 
+    def __len__(self):
+        if self.start is -INF or self.end is INF:
+            return float('inf')
+        try:
+            return self.end - self.start
+        except TypeError:
+            raise TypeError(f'subtraction not implemented for {type(self.start).__name__}')
+
     def __repr__(self):
         return f'{"(["[self.start_inc]}{self.start}, {self.end}{")]"[self.end_inc]}'
 
@@ -286,7 +295,7 @@ class RangeSet:
     def add(self, range_):
         """Keep ranges sorted as we add them, and merge intersecting ranges."""
         if not isinstance(range_, RangeBase):
-            raise ValueError("expected Range, got {type(range_).__name__}")
+            raise ValueError(f'expected Range, got {type(range_).__name__}')
 
         if range_ is EMPTY_RANGE:
             return
@@ -311,6 +320,34 @@ class RangeSet:
             ranges.insert(start, range_)
         else:
             ranges[start: end] = [range_]
+
+    def __iter__(self):
+        yield from self._ranges
+
+    def __and__(self, other):
+        if isinstance(other, RangeBase):
+            other = RangeSet(other)
+
+        if not isinstance(other, RangeSet):
+            raise ValueError(f'expected Range or RangeSet got {type(other).__name__}')
+
+        self_ranges = iter(self)
+        current_cmp = next(self_ranges, None)
+
+        other_ranges = iter(other)
+        range_ = next(other_ranges, None)
+
+        s = RangeSet()
+        while current_cmp is not None and range_ is not None:
+            if current_cmp.intersects(range_):
+                s.add(current_cmp & range_)
+            elif range_.end < current_cmp:
+                range_ = next(other_ranges, None)
+                continue
+            current_cmp = next(self_ranges, None)
+
+        return s
+
 
     def __repr__(self):
         return f'{{{", ".join(map(str, self._ranges))}}}'
