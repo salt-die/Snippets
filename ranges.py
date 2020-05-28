@@ -2,10 +2,6 @@
 which Range contains a key.
 """
 # TODO: Implement subset, superset
-#  ...: Finish RangeSet implementation:
-#  ...:    __xor__
-#  ...:    __contains__
-#  ...:   ___invert__
 #  ...: __delitem__ for RangeDict
 from bisect import bisect, insort
 from contextlib import suppress
@@ -19,13 +15,19 @@ class Immutable:
 
 class INF(Immutable):
     def __lt__(self, other): return False
-    def __gt__(self, other): return True
+    def __gt__(self, other):
+        if isinstance(other, Range) and other.end is self or other is self:
+            return False
+        return True
     def __neg__(self): return MINUS_INF
     def __repr__(self): return '∞'
     def __hash__(self): return hash(float('inf'))
 
 class MINUS_INF(Immutable):
-    def __lt__(self, other): return True
+    def __lt__(self, other):
+        if isinstance(other, Range) and other.start is self or other is self:
+            return False
+        return True
     def __gt__(self, other): return False
     def __neg__(self): return INF
     def __repr__(self): return '-∞'
@@ -133,6 +135,9 @@ class Range(RangeBase):
         if isinstance(other, Range):
             return self._cmp < other._cmp
 
+        if other is INF and self.end is INF:
+            return False
+
         try:
             return self.end < other or not self.end_inc and self.end == other
         except TypeError:
@@ -141,6 +146,9 @@ class Range(RangeBase):
     def __gt__(self, other):
         if isinstance(other, Range):
             return other < self
+
+        if other is -INF and self.start is -INF:
+            return False
 
         try:
             return self.start > other or not self.start_inc and self.start == other
@@ -178,6 +186,8 @@ class Range(RangeBase):
     @ensure_order
     def intersects(self, other):
         """Return true if the intersection with 'other' isn't empty."""
+        if other.start is -INF:
+            return True
         return other.start in self and not self.continues(other)
 
     @ensure_order
@@ -185,6 +195,7 @@ class Range(RangeBase):
         """Return true if the union of self and other is a single contiguous range."""
         return other.start in self or self.end in other
 
+    @defer_to_set
     @ensure_order
     def __or__(self, other):
         """Returns union of two Ranges."""
@@ -212,6 +223,7 @@ class Range(RangeBase):
 
         return Range(other.start, self.end, other.start_inc, self.end_inc)
 
+    @defer_to_set
     @ensure_order
     def __xor__(self, other):
         """Symmetric difference of two Ranges.
@@ -382,20 +394,20 @@ class RangeSet:
 
     @ensure_type
     def __and__(self, other):
-        self_ranges = iter(self)
-        current_cmp = next(self_ranges, None)
-
         other_ranges = iter(other)
-        range_ = next(other_ranges, None)
+        other_range = next(other_ranges, None)
+
+        self_ranges = iter(self)
+        self_range = next(self_ranges, None)
 
         s = RangeSet()
-        while current_cmp and range_:
-            if current_cmp.intersects(range_):
-                s.add(current_cmp & range_)
-            elif range_.end < current_cmp:
-                range_ = next(other_ranges, None)
+        while other_range and self_range:
+            if self_range.intersects(other_range):
+                s.add(self_range & other_range)
+            elif other_range.end < self_range:
+                other_range = next(other_ranges, None)
                 continue
-            current_cmp = next(self_ranges, None)
+            self_range = next(self_ranges, None)
 
         return s
 
@@ -408,8 +420,57 @@ class RangeSet:
             s.add(range_)
         return s
 
+    @ensure_type
+    def __ior__(self, other):
+        for range_ in other:
+            self.add(range_)
+        return self
+
+    @ensure_type
+    def __xor__(self, other):
+        other_ranges = iter(other)
+        other_range = next(other_ranges, None)
+
+        self_ranges = iter(self)
+        self_range = next(self_ranges, None)
+
+        s = RangeSet()
+        while other_range and self_range:
+            if self_range.intersects(other_range):
+                dif = self_range ^ other_range
+                if isinstance(dif, Range):
+                    # If a xor returns a contiguous Range, we need to check ends to determine which
+                    # of the RangeSets we call next on.
+                    if dif.end > other_range:
+                        self_range = dif
+                        other_range = next(other_ranges, None)
+                        continue
+                    elif dif.end > self_range:
+                        other_range = dif
+                    else:
+                        s.add(dif)
+                        other_range = next(other_ranges, None)
+                else:  # is a RangeSet
+                    r1, r2 = dif
+                    s.add(r1)
+                    other_range = r2
+            elif other_range.end < self_range:
+                s.add(other_range)
+                other_range = next(other_ranges, None)
+                continue
+            else:
+                s.add(self_range)
+            self_range = next(self_ranges, None)
+
+        if other_range:
+            s.add(other_range)
+        return s
+
+    def __invert__(self):
+        return self ^ Range()
+
     def __len__(self):
-        return sum(map(len, self._ranges))
+        return len(self._ranges)
 
     def copy(self):
         s = RangeSet()
