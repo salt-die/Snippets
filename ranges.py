@@ -44,6 +44,7 @@ class EMPTY_RANGE(RangeBase):
     def __invert__(self): return Range()
     def __and__(self, other): return self
     def __len__(self): return 0
+    def __bool__(self): return False
     def __repr__(self): return '∅'
 
 INF = INF()
@@ -100,10 +101,10 @@ class Range(RangeBase):
         with suppress(TypeError, ValueError, IndexError):
             start, end, start_inc, end_inc = from_string(start)
 
-        if start is None:
+        if start is None or start is ... or start == '-inf':
             start = -INF
             start_inc = False
-        if end is None:
+        if end is None or end is ... or end =='inf':
             end = INF
             end_inc = False
 
@@ -163,6 +164,9 @@ class Range(RangeBase):
         except TypeError:
             raise TypeError(f"'in <{type(self).__name__}>' requires type comparable to "
                             f"{type(self.start).__name__} as left operand, not {type(value).__name__}")
+
+    def __bool__(self):
+        return True
 
     @ensure_order
     def continues(self, other):
@@ -349,6 +353,33 @@ class RangeSet:
     def __iter__(self):
         yield from self._ranges
 
+    def __bool__(self):
+        return bool(self._ranges)
+
+    def __contains__(self, other):
+        ranges = self._ranges
+
+        if isinstance(other, RangeBase):
+            if other is EMPTY_RANGE:
+                return True
+
+            i = bisect(ranges, other.start) - 1
+            try:
+                return other == ranges[i]
+            except IndexError:
+                return False
+
+        try:
+            i = bisect(ranges, other) - 1
+            return other in ranges[i]
+        except IndexError:
+            return False
+        except TypeError:
+            raise TypeError(f'{type(other).__name__} not comparable to elements in this set')
+
+    def __eq__(self, other):
+        return self._ranges == other._ranges
+
     @ensure_type
     def __and__(self, other):
         self_ranges = iter(self)
@@ -358,7 +389,7 @@ class RangeSet:
         range_ = next(other_ranges, None)
 
         s = RangeSet()
-        while current_cmp is not None and range_ is not None:
+        while current_cmp and range_:
             if current_cmp.intersects(range_):
                 s.add(current_cmp & range_)
             elif range_.end < current_cmp:
@@ -371,11 +402,14 @@ class RangeSet:
     @ensure_type
     def __or__(self, other):
         # There's a more sophisticated and faster version of this where we iterate over both sets much like
-        # in __and__: implementing this will go on the TODO list.
+        # in __and__: implementing this will go on the TODO list. The complexity should drop from O(n log n) to O(n).
         s = self.copy()
         for range_ in other:
             s.add(range_)
         return s
+
+    def __len__(self):
+        return sum(map(len, self._ranges))
 
     def copy(self):
         s = RangeSet()
@@ -410,4 +444,4 @@ if __name__ == '__main__':
     s = RangeSet()
     s.add(a)
     s.add(b)
-    assert s._ranges == [c]  # no __contains__ yet :(
+    assert s == RangeSet(c)
