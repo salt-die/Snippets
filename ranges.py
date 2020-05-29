@@ -453,33 +453,39 @@ class RangeSet:
                 #    Case 2b:
                 #        self_range ends before other_range
                 if isinstance(dif, RangeBase):
-                    if dif is EMPTY_RANGE or \
-                        other_range.end == self_range.end and other_range.end_inc == self_range.end_inc:
-                            s |= dif
-                            other_range = next(other_ranges, None)
-                    elif other_range < self_range:
+                    if dif is EMPTY_RANGE \
+                      or other_range.end == self_range.end and other_range.end_inc == self_range.end_inc:
+                        s |= dif
+                        other_range = next(other_ranges, None)
+                        self_range = next(self_ranges, None)
+                        continue
+
+                    if other_range < self_range:
                         self_range = dif
                         other_range = next(other_ranges, None)
                         continue
-                    else:
-                        other_range = dif
-                else:
-                    r1, r2 = dif
-                    s |= r1
-                    if other_range.end < self_range.end:
-                        self_range = r2
-                        other_range = next(other_ranges, None)
-                        continue
-                    other_range = r2
 
-            elif other_range.end < self_range:
+                    other_range = dif
+                    self_range = next(self_ranges, None)
+                    continue
+
+                r1, r2 = dif
+                s |= r1
+                if other_range.end < self_range.end:
+                    self_range = r2
+                    other_range = next(other_ranges, None)
+                    continue
+
+                other_range = r2
+                self_range = next(self_ranges, None)
+                continue
+
+            if other_range.end < self_range:
                 s |= other_range
                 other_range = next(other_ranges, None)
                 continue
 
-            else:
-                s |= self_range
-
+            s |= self_range
             self_range = next(self_ranges, None)
 
         # Collect left-overs
