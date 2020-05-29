@@ -413,8 +413,6 @@ class RangeSet:
 
     @ensure_type
     def __or__(self, other):
-        # There's a more sophisticated and faster version of this where we iterate over both sets much like
-        # in __and__: implementing this will go on the TODO list. The complexity should drop from O(n log n) to O(n).
         s = self.copy()
         for range_ in other:
             s.add(range_)
@@ -453,29 +451,31 @@ class RangeSet:
                 #    Case 2b:
                 #        self_range ends before other_range
                 if isinstance(dif, RangeBase):
+                    # 1a
                     if dif is EMPTY_RANGE \
                       or other_range.end == self_range.end and other_range.end_inc == self_range.end_inc:
                         s |= dif
                         other_range = next(other_ranges, None)
                         self_range = next(self_ranges, None)
                         continue
-
+                    # 1b
                     if other_range < self_range:
                         self_range = dif
                         other_range = next(other_ranges, None)
                         continue
-
+                    # 1c
                     other_range = dif
                     self_range = next(self_ranges, None)
                     continue
 
                 r1, r2 = dif
                 s |= r1
+                # 2a
                 if other_range.end < self_range.end:
                     self_range = r2
                     other_range = next(other_ranges, None)
                     continue
-
+                # 2b
                 other_range = r2
                 self_range = next(self_ranges, None)
                 continue
