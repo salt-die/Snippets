@@ -15,7 +15,7 @@ class peekable:
         raise StopIteration
 
     def __getattr__(self, attr):
-        """Return the nth item in peeked with n `_`s"""
+        """Return the nth item in peeked with n  _'s, e.g., `.peek(2)` equivalent to `.__`"""
         n = attr.count('_')
         if n != len(attr):
             return super().__getattribute__(attr)
@@ -48,5 +48,5 @@ class peekable:
         except StopIteration:
             items = ", ".join(map(str, self.peeked))
         else:
-            items = ', '.join(map(str, self.peek(3))) + '...'
+            items = ', '.join(map(str, self.peek(3))) + ', ...'
         return f'peekable([{items}])'
