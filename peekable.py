@@ -1,5 +1,5 @@
 from collections import deque
-
+from functools import partial
 
 NULL = type('', (), {})()  # None is a valid default value, so we use this for no default.
 
@@ -25,12 +25,10 @@ class peekable:
         if n is None:
             return self.peek(n=1, default=default)[0]
 
+        next_ = partial(next, self.iterable) if default is NULL else partial(next, self.iterable, default)
+
         while len(self.peeked) < n:
-            try:
-                self.peeked.append(next(self.iterable))
-            except StopIteration:
-                if default is NULL: raise StopIteration
-                self.peeked.append(default)
+            self.peeked.append(next_())
 
         return tuple(map(self.peeked.__getitem__, range(n)))
 
