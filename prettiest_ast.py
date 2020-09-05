@@ -3,29 +3,7 @@ import re
 
 NAME_RE = re.compile('[.]([A-Za-z]+)[ ]')
 DEFAULT = 3
-
-class IndentProp:
-    def __init__(self, indent=DEFAULT):
-        self.indent = indent
-
-    @property
-    def indent(self):
-        return self._indent
-
-    @indent.setter
-    def indent(self, value):
-        self._indent = value
-        self.last = '├' + '─' * (value - 1)
-        self.pre = '│' + ' ' * (value - 1)
-        self.last_last = '╰' + '─' * (value - 1)
-        self.blank = ' ' * value
-
-
-ind = IndentProp()
-
-def snake(head, tail):
-    yield head
-    while 1: yield tail
+LINE_CHRS = '├─', '│ ', '╰─', '  '
 
 def flatten(iterable):
     for item in iterable:
@@ -34,12 +12,22 @@ def flatten(iterable):
         else:
             yield item
 
-def stringify(tree):
+def snake(head, tail):
+    yield head
+    while 1: yield tail
+    
+def prefixes(nfields, indent):
+    head, tail, last_head, last_tail = (a + b * (indent - 1) for a, b in LINE_CHRS)
+    for _ in range(nfields - 1):
+        yield snake(head, tail)
+    yield snake(last_head, last_tail)
+
+def stringify(tree, indent):
     if not isinstance(tree, ast.AST):
         yield str(tree)
         return
 
-    leaf_name =  NAME_RE.search(str(tree)).group(1)
+    leaf_name = NAME_RE.search(str(tree)).group(1)
     yield leaf_name
 
     # Put quotes around strings if they're from `value` fields and skip non-`value` fields whose attr is None
@@ -47,14 +35,11 @@ def stringify(tree):
               for field in tree._fields if (attr := getattr(tree, field)) is not None or field == 'value')
     fields = tuple(flatten(fields))
 
-    for i, attr in enumerate(fields, start=1):
-        head, tail = (ind.last, ind.pre)  if i < len(fields) else (ind.last_last, ind.blank)
-        prefix = snake(head, tail)
-        yield from (pre + line for pre, line in zip(prefix, stringify(attr)))
+    for prefix, attr in zip(prefixes(len(fields), indent), fields):
+        yield from (pre + line for pre, line in zip(prefix, stringify(attr, indent)))
 
 def pformat(code, indent=DEFAULT):
-    ind.indent = indent
     body = ast.parse(code).body
-    return '\n'.join(line for body_part in body for line in stringify(body_part))
+    return '\n'.join(line for body_part in body for line in stringify(body_part, indent))
 
 def pp(code, indent=DEFAULT): print(pformat(code, indent))
