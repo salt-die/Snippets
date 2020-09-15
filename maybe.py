@@ -1,27 +1,24 @@
-Null = object()  # Sentinel, None may be a valid attribute value
+"""Note that Maybe is meant to be used "anonymously".
+Assigning Maybe(...) to some variable is asking for trouble as Maybe is singleton.
+"""
+
+Null = object()  # Sentinel; None may be a valid attribute value
 
 class MaybeMeta(type):
-    """This metaclass ensures Maybe(Null) is singleton."""
-    nothing = None
+    """Ensures Maybe is singleton."""
+    instance = None
 
     def __call__(cls, value):
-        if value is Null:
-            if MaybeMeta.nothing is None:
-                MaybeMeta.nothing = super(MaybeMeta, cls).__call__(value)
-            return MaybeMeta.nothing
-
-        return super(MaybeMeta, cls).__call__(value)
+        if MaybeMeta.instance is None:
+            MaybeMeta.instance = super(MaybeMeta, cls).__call__()
+        setattr(MaybeMeta.instance, f'_{cls.__name__}__value', value)
+        return MaybeMeta.instance
 
 
 class Maybe(metaclass=MaybeMeta):
-    def __init__(self, value):
-        self.__value = value
-
     def __getattr__(self, attr):
-        if self.__value is Null:
-            return self
-
-        return Maybe(getattr(self.__value, attr, Null))
+        self.__value = getattr(self.__value, attr, Null)
+        return self
 
     def __or__(self, other):
         if self.__value is Null:
