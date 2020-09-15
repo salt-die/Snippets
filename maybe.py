@@ -1,7 +1,7 @@
 Null = object()  # Sentinel, None may be a valid attribute value
 
 class MaybeMeta(type):
-    """This metaclass ensures Maybe(None) is singleton."""
+    """This metaclass ensures Maybe(Null) is singleton."""
     nothing = None
 
     def __call__(cls, value):
