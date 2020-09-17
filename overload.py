@@ -1,10 +1,5 @@
+from collections import defaultdict
 from inspect import signature
-
-
-class Dispatcher(dict):
-    def __missing__(self, key):
-        self[key] = multiple_dispatch_factory()
-        return self[key]
 
 
 def multiple_dispatch_factory():
@@ -36,7 +31,7 @@ def multiple_dispatch_factory():
     return multiple_dispatch
 
 
-_dispatch_by_name = Dispatcher()
+_dispatch_by_name = defaultdict(multiple_dispatch_factory)
 def overloaded(func):
     dispatcher = _dispatch_by_name[func.__name__]
     dispatcher.funcs.append(func)
