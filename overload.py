@@ -1,24 +1,17 @@
 from inspect import signature
 
 
-class dynamicdict(dict):
-    def __init__(self, default_factory, **kwargs):
-        super().__init__(**kwargs)
-        self._default_factory = default_factory
-
+class Dispatcher(dict):
     def __missing__(self, key):
-        self[key] = self._default_factory(key)
+        self[key] = multiple_dispatch_factory()
         return self[key]
 
 
-class FuncStorage:
-    def __init__(self, name):
-        self.name = name
-        self.funcs = []
+def multiple_dispatch_factory():
+    def multiple_dispatch(*args, **kwargs):
+        generic = None
 
-    def __call__(self, *args, **kwargs):
-        generic = None  # If arguments bind to a function with no annotation we'll remember and move on
-        for func in self.funcs:
+        for func in multiple_dispatch.funcs:
             sig = signature(func)
 
             try:
@@ -39,16 +32,15 @@ class FuncStorage:
             return generic(*args, **kwargs)
 
         raise ValueError("No registered function matches the annotation types")
+    multiple_dispatch.funcs = []
+    return multiple_dispatch
 
-    def __repr__(self):
-        return f'overloaded function {self.name}'
 
-
-_func_storage_by_name = dynamicdict(FuncStorage)
+_dispatch_by_name = Dispatcher()
 def overloaded(func):
-    func_storage = _func_storage_by_name[func.__name__]
-    func_storage.funcs.append(func)
-    return func_storage
+    dispatcher = _dispatch_by_name[func.__name__]
+    dispatcher.funcs.append(func)
+    return dispatcher
 
 
 if __name__ == "__main__":
