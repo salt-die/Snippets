@@ -1,24 +1,47 @@
-"""Note that Maybe is meant to be used "anonymously".
-Assigning Maybe(...) to some variable is asking for trouble as Maybe is singleton.
-"""
+Null = object()
 
-Null = object()  # Sentinel; None may be a valid attribute value
 
 class MaybeMeta(type):
-    """Ensures Maybe is singleton."""
-    instance = None
+    """Cache Maybe(Null)"""
+    Nothing = None
 
-    def __call__(cls, value):
-        if MaybeMeta.instance is None:
-            MaybeMeta.instance = super(MaybeMeta, cls).__call__()
-        setattr(MaybeMeta.instance, f'_{cls.__name__}__value', value)
-        return MaybeMeta.instance
+    def __call__(cls, val):
+        if val is Null:
+            if MaybeMeta.Nothing is None:
+                MaybeMeta.Nothing = super(MaybeMeta, cls).__call__(val)
+            return MaybeMeta.Nothing
+        return super(MaybeMeta, cls).__call__(val)
 
 
 class Maybe(metaclass=MaybeMeta):
+    """A class for Chaining attributes that may or may not exist.
+    Say we want to assign `x` the value from `users.bob.friends[1].name` if it exists or None if it doesn't:
+    `x = Maybe(users).bob.friends[1].name | None`
+    """
+    def __init__(self, val):
+        self.__value = val
+
     def __getattr__(self, attr):
-        self.__value = getattr(self.__value, attr, Null)
-        return self
+        return Maybe(getattr(self.__value, attr, Null))
+
+    def __setattr__(self, attr, val):
+        if attr == '_Maybe__value':
+            return super().__setattr__(attr, val)
+
+        if self.__value is not Null:
+            setattr(self.__value, attr, val)
+
+    def __call__(self, *args, **kwargs):
+        try:
+            return Maybe(self.__value(*args, **kwargs))
+        except TypeError:
+            return Maybe(Null)
+
+    def __getitem__(self, key):
+        try:
+            return Maybe(self.__value[key])
+        except (TypeError, IndexError, KeyError):
+            return Maybe(Null)
 
     def __or__(self, other):
         if self.__value is Null:
@@ -26,8 +49,11 @@ class Maybe(metaclass=MaybeMeta):
         return self.__value
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     class U: ...
-    users = U(); users.bob = U(); users.bob.friends = U(); users.bob.friends.sue = 'sue'
-    print(Maybe(users).bob.friends.sue | 'mary')  # attributes all exist, prints 'sue'
-    print(Maybe(users).bob.friends.mary | 'peggy')  # mary doesn't exist, prints 'peggy'
+    users = U(); users.bob = U(); sue = U(); sue.name = 'sue'; users.bob.friends = [sue, sue]
+
+    Maybe(users).george.friends.mary = 'mary'  # Does nothing as users.george doesn't exist
+    Maybe(users).george | 'No george'  # 'No george'
+    Maybe(users).bob.friends[1].birthday = '1/1/00'  # Adds birthday attribute to users.bob.friends[1]
+    users.bob.friends[1].birthday  # '1/1/00'
