@@ -2,7 +2,7 @@ import sys
 from io import BytesIO
 
 
-if sys.platform.startswith("linux"):
+if sys.platform.startswith('linux'):
     import fcntl
     import os
     import termios
@@ -24,12 +24,12 @@ if sys.platform.startswith("linux"):
 
         return ch
 
-elif sys.platform == "win32":
+elif sys.platform == 'win32':
     import msvcrt
 
     def getch(block=True):
         if not block and not msvcrt.kbhit():
-            return ""
+            return b''
         return msvcrt.getch()
 
 else:
