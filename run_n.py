@@ -1,3 +1,4 @@
+from collections import Counter
 from functools import singledispatch, wraps
 from types import MethodType, FunctionType
 
