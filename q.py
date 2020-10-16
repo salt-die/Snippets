@@ -48,7 +48,7 @@ def all_attrs(cls):
     return no_defaults, defaults
 
 
-class q(metaclass=QMeta):
+class q(metaclass=qMeta):
     def __init_subclass__(cls):
         no_defaults, defaults = all_attrs(cls)
 
@@ -61,7 +61,7 @@ class q(metaclass=QMeta):
         init_body = '\n'.join(f'    self.{name}={name}' for name in all_args) if all_args else '    pass'
 
         repr_header = 'def __repr__(self):\n'
-        repr_body = '    return f"{{type(self).__name__}}({})"'.format(', '.join(f'{name}={{self.{name}}}' for name in all_args))
+        repr_body = '    return f"{{type(self).__name__}}({})"'.format(', '.join(f'{name}={{self.{name}!r}}' for name in all_args))
 
         loc = {}
         exec(init_header + init_body, loc)
