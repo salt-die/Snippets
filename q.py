@@ -5,11 +5,27 @@ class Point(q):
 
 This is all you need to get the __init__ and __repr__ one expects.
 """
+from inspect import getsource
 from sys import modules
 from types import FunctionType
 
 
 NO_DEFAULT = object()
+
+def is_default(f):
+    """If a value is a FunctionType, we check if it's not a lambda expression:  We'll assume lambda expressions in the class body
+       are meant to be default values in the constructor.
+    """
+    if isinstance(f, FunctionType):
+        *_, code = getsource(f).partition('=')
+        return True if code.strip().startswith('lambda') else False
+    return True
+
+def lambda_source(f):
+    """We can use a lambda's repr as a default value in the __init__, so we use getsource to reproduce the code.
+    """
+    *_, c = getsource(f).partition('=')
+    return c.strip()
 
 
 class AutoDict(dict):
@@ -27,7 +43,7 @@ class AutoDict(dict):
         self['__auto_attrs__'][key] = NO_DEFAULT
 
     def __setitem__(self, key, val):
-        if not (key.startswith('__') or isinstance(val, FunctionType)):
+        if not key.startswith('__') and is_default(val):
             self['__auto_attrs__'][key] = val
         else:
             super().__setitem__(key, val)
@@ -53,7 +69,7 @@ class q(metaclass=qMeta):
         no_defaults, defaults = all_attrs(cls)
 
         no_default_args = ', '.join(no_defaults)
-        default_args = ', '.join(f'{name}={val!r}' for name, val in defaults.items())
+        default_args = ', '.join(f'{name}={lambda_source(val)}' if isinstance(val, FunctionType) else f'{name}={val!r}' for name, val in defaults.items())
         all_args = no_defaults + list(defaults)
         sep = ', ' if no_default_args and default_args else ''
 
