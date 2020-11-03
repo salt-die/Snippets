@@ -6,14 +6,17 @@ class Necklace:
     To facilitate fast comparison of Necklaces, they store their
     canonical form (specifically, the least shift).
     """
+    __slots__ = '_items', '_least'
+
     def __init__(self, items):
         super().__setattr__('_items', deque(items))
 
-        super().__setattr__('_least', self._items.copy())  # least shift
+        least = self._items.copy()  # least shift
         for _ in range(len(self)):
             self._items.rotate()
-            if self._items < self._least:
-                super().__setattr__('_least', self._items.copy())
+            if self._items < least:
+                least = self._items.copy()
+        super().__setattr__('_least', tuple(least))
 
     def __len__(self):
         return len(self._items)
