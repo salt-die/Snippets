@@ -1,36 +1,45 @@
-# -*- coding: utf-8 -*-
-class CyclicTuple:
-    """
-    CyclicTuples are tuples that "wrap-around", e.g., (1,2,3,4) == (3,4,1,2) is
+from collections import deque
+
+class Necklace:
+    """Necklaces are tuples that "wrap-around", e.g., (1,2,3,4) == (3,4,1,2) is
     true, but (1,2,3,4) == (1,2,4,3) is not.
-
-    To facilitate fast comparison of CyclicTuples, CyclicTuples store their
-    canonical form (specifically, the least shift) -- fast comparison of
-    shifts is what necessitated this class.
+    To facilitate fast comparison of Necklaces, they store their
+    canonical form (specifically, the least shift).
     """
-    def __init__(self, *items):
-        self.__unshifted = tuple(items)
-        self.__canonical = min(items[i:] + items[:i] for i, _ in enumerate(items))
+    def __init__(self, items):
+        super().__setattr__('_items', deque(items))
 
-    def __repr__(self):
-        return repr(self.__unshifted)
+        super().__setattr__('_least', self._items.copy())  # least shift
+        for _ in range(len(self)):
+            self._items.rotate()
+            if self._items < self._least:
+                super().__setattr__('_least', self._items.copy())
+
+    def __len__(self):
+        return len(self._items)
 
     def __eq__(self, other):
-        try:
-            return self.__canonical == other._CyclicTuple__canonical
-        except AttributeError:
-            return False
+        if not isinstance(other, Necklace):
+            return NotImplemented
+        return self._least == other._least
 
-    def index(self, item):
-        return self.__unshifted.index(item)
+    def __iter__(self):
+        yield from self._items
 
-    #Return a list of the indices of all occurences of an item in self
-    def indices(self, item):
-        return [i for i, n in enumerate(self.__unshifted) if n==item]
+    def __repr__(self):
+        return f'{type(self).__name__}([{", ".join(map(repr, self))}])'
 
-    #Return a list of unique items in self -- items in no particular order
-    def items(self):
-        return list({*self.__unshifted})
+    def __setattr__(self, attr, val):
+        raise AttributeError('Necklace is immutable')
 
-    def __getitem__(self, key):
-        return self.__unshifted[key]
+    def __getitem__(self, index):
+        return self._items[index]
+
+    def rotate(self, n=1):
+        self._items.rotate(n)
+
+    def copy(self):
+        copy = type(self)(())
+        super(type(self), copy).__setattr__('_items', self._items.copy())
+        super(type(self), copy).__setattr__('_least', self._least)
+        return copy
