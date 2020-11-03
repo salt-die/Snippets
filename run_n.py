@@ -18,9 +18,7 @@ def run_n(n):
                 if instance_run_counts[id(args[0])] < n:
                     instance_run_counts[id(args[0])] += 1
                     return f(*args, **kwargs)
-                return
-
-            if wrapper.nruns < n:
+            elif wrapper.nruns < n:
                 wrapper.nruns += 1
                 return f(*args, **kwargs)
 
