@@ -69,7 +69,7 @@ class q(metaclass=qMeta):
         no_defaults, defaults = all_attrs(cls)
 
         no_default_args = ', '.join(no_defaults)
-        default_args = ', '.join(f'{name}={lambda_source(val)}' if isinstance(val, FunctionType) else f'{name}={val!r}' for name, val in defaults.items())
+        default_args = ', '.join(f'{name}=' + (f'{lambda_source(val)}' if isinstance(val, FunctionType) else f'{val!r}') for name, val in defaults.items())
         all_args = no_defaults + list(defaults)
         sep = ', ' if no_default_args and default_args else ''
 
