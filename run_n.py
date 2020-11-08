@@ -11,18 +11,26 @@ def run_n(n):
     def deco(f):
         instance_run_counts = Counter()
 
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            # determine if a function was defined in a class
-            if (params := signature(f).parameters) and next(iter(params)) == 'self':
-                if instance_run_counts[id(args[0])] < n:
-                    instance_run_counts[id(args[0])] += 1
-                    return f(*args, **kwargs)
-            elif wrapper.nruns < n:
-                wrapper.nruns += 1
-                return f(*args, **kwargs)
+        # determine if function was defined in a class
+        if (params := signature(f).parameters) and next(iter(params)) == 'self':
+            @wraps(f)
+            def wrapper(*args, **kwargs):
+                if args:
+                    if instance_run_counts[id(args[0])] < n:
+                        instance_run_counts[id(args[0])] += 1
+                        return f(*args, **kwargs)
+                else:
+                    # Run from class
+                    raise TypeError(f"{f.__name__}() missing 1 required positional argument 'self'")
 
-        wrapper.nruns = 0
+        else:
+            @wraps(f)
+            def wrapper(*args, **kwargs):
+                if wrapper.nruns < n:
+                    wrapper.nruns += 1
+                    return f(*args, **kwargs)
+            wrapper.nruns = 0
+
         return wrapper
 
     return deco
