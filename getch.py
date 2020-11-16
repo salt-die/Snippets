@@ -33,7 +33,16 @@ elif sys.platform == 'win32':
         return msvcrt.getch()
 
 else:
-    raise OSError(f'getch not implemented for {sys.platform}')
+    try:  # Try for Mac
+        import Carbon
+        Carbon.Evt  # Not in *nix
+    except (ModuleNotFoundError, AttributeError):
+        raise OSError(f'getch not implemented for {sys.platform}')
+
+    def getch(block=True):  # I haven't tested this.
+        if not block and Carbon.Evt.EventAvail(0x0008)[0] == 0:  # 0x0008 is the keyDownMask
+            return b''
+        return bytes(chr(Carbon.Evt.GetNextEvent(0x0008)[1][1] & 0x000000FF), 'utf8')
 
 def flush():
     with BytesIO() as r:
