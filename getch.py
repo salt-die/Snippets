@@ -36,8 +36,8 @@ else:
     try:  # Try for Mac
         import Carbon
         Carbon.Evt  # Not in *nix
-    except (ModuleNotFoundError, AttributeError):
-        raise OSError(f'getch not implemented for {sys.platform}')
+    except (ModuleNotFoundError, AttributeError) as e:
+        raise OSError(f'getch not implemented for {sys.platform}') from e
 
     def getch(block=True):  # I haven't tested this.
         if not block and Carbon.Evt.EventAvail(0x0008)[0] == 0:  # 0x0008 is the keyDownMask
