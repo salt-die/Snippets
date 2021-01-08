@@ -12,10 +12,8 @@ def maybe(val):
     var, sep, _ = line.partition('=')
 
     if not sep:
-        raise SyntaxError('maybe(val) needs to be called in an assignment expression')
+        raise SyntaxError('maybe(val) needs to be called in an assignment statement')
 
-    glob = parent_frame.f_locals
-    loc = {}
-    exec(f'val = {var}', glob, loc)
-
-    return val if val is not None else loc['val']
+    if val is None:
+        return parent_frame.f_locals[var.strip()]
+    return val
