@@ -17,12 +17,10 @@ if sys.platform.startswith('linux'):
             tty.setraw(fd)
             if not block:
                 fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-            ch = sys.stdin.buffer.read(1)
+            return sys.stdin.buffer.read(1)
         finally:
             fcntl.fcntl(fd, fcntl.F_SETFL, flags)
             termios.tcsetattr(fd, termios.TCSADRAIN, settings)
-
-        return ch
 
 elif sys.platform == 'win32':
     import msvcrt
