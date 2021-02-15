@@ -22,7 +22,7 @@ def is_default(f):
     return True
 
 def lambda_source(f):
-    """We can use a lambda's repr as a default value in the __init__, so we use getsource to reproduce the code.
+    """We can't use a lambda's repr as a default value in the __init__, so we use getsource to reproduce the code.
     """
     *_, c = getsource(f).partition('=')
     return c.strip()
