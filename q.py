@@ -13,8 +13,9 @@ from types import FunctionType
 NO_DEFAULT = object()
 
 def is_default(f):
-    """If a value is a FunctionType, we check if it's not a lambda expression:  We'll assume lambda expressions in the class body
-       are meant to be default values in the constructor.
+    """
+    If a value is a FunctionType, we check if it's not a lambda expression:  We'll assume lambda expressions in the class body
+    are meant to be default values in the constructor.
     """
     if isinstance(f, FunctionType):
         *_, code = getsource(f).partition('=')
@@ -69,7 +70,7 @@ class q(metaclass=qMeta):
         no_defaults, defaults = all_attrs(cls)
 
         no_default_args = ', '.join(no_defaults)
-        default_args = ', '.join(f'{name}=' + (f'{lambda_source(val)}' if isinstance(val, FunctionType) else f'{val!r}') for name, val in defaults.items())
+        default_args = ', '.join(f'{name}=' + (lambda_source(val) if isinstance(val, FunctionType) else f'{val!r}') for name, val in defaults.items())
         all_args = no_defaults + list(defaults)
         sep = ', ' if no_default_args and default_args else ''
 
