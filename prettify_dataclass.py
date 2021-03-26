@@ -17,7 +17,7 @@ def stringify(obj, indent=4, _indents=0):
 
     this_indent = indent * _indents * ' '
     next_indent = indent * (_indents + 1) * ' '
-    start, end = f'{type(obj).__name__}(', ')'  # dicts, lists, and tuples will re-assign this
+    start, end = f'{type(obj).__name__}(', ')'  # generic start and end -- dicts, lists, and tuples will re-assign this
 
     if is_dataclass(obj):
         body = '\n'.join(
