@@ -1,53 +1,60 @@
+from collections.abc import Mapping, Iterable
 from dataclasses import is_dataclass, fields
 
-def pretty_print(obj):
-    print(nested_stringify(obj))
+def pretty_print(obj, indent=4):
+    """
+    Pretty prints a (possibly deeply-nested) dataclass.
+    Each new block will be indented by `indent` spaces (default is 4).
+    """
+    print(stringify(obj, indent))
 
-NESTED_TYPES = dict, list, tuple,  # One can add other containers here along with additional branching in `nested_stringify`
+def stringify(obj, indent=4, _indents=0):
+    if isinstance(obj, str):
+        return f'"{obj}"'
 
-def nested_stringify(obj, indent=4, _indents=0):
-    if not isinstance(obj, NESTED_TYPES) and not is_dataclass(obj):
-        return stringify(obj)
+    if not is_dataclass(obj) and not isinstance(obj, (Mapping, Iterable)):
+        return str(obj)
 
     this_indent = _leading_spaces(indent, _indents)
     next_indent = _leading_spaces(indent, _indents + 1)
 
     if is_dataclass(obj):
-        start, end = type(obj).__name__ + '(', this_indent + ')'
-
+        start, end = _generic_ends(obj)
         middle = '\n'.join(
             f'{next_indent}{field.name}='
-            f'{nested_stringify(getattr(obj, field.name), indent, _indents + 1)},' for field in fields(obj)
+            f'{stringify(getattr(obj, field.name), indent, _indents + 1)},' for field in fields(obj)
         )
 
-    elif isinstance(obj, dict):
-        start, end = '{', this_indent + '}'
+    elif isinstance(obj, Mapping):
+        if isinstance(obj, dict):
+            start, end = '{}'
+        else:
+            start, end = _generic_ends(obj)
 
         middle = '\n'.join(
-            f'{next_indent}{nested_stringify(key, indent, _indents + 1)}: '
-            f'{nested_stringify(value, indent, _indents + 2)},' for key, value in obj.items()
+            f'{next_indent}{stringify(key, indent, _indents + 1)}: '
+            f'{stringify(value, indent, _indents + 1)},' for key, value in obj.items()
         )
 
-    else:
+    else:  # is Iterable
         if isinstance(obj, list):
-            start, end = '[', this_indent + ']'
-        else:  # is tuple
-            start, end = '(', this_indent + ')'
+            start, end = '[]'
+        elif isinstance(obj, tuple):
+            start, end = '()'
+        else:
+            start, end = _generic_ends(obj)
 
         middle = '\n'.join(
-            f'{next_indent}{nested_stringify(item, indent, _indents + 1)},' for item in obj
+            f'{next_indent}{stringify(item, indent, _indents + 1)},' for item in obj
         )
 
-    return '\n'.join((start, middle, end))
-
-def stringify(obj):
-    if isinstance(obj, str):
-        return f'"{obj}"'
-    return str(obj)
+    return f'{start}\n{middle}\n{this_indent}{end}'
 
 def _leading_spaces(indent, indents):
     return indent * indents * ' '
 
+def _generic_ends(obj):
+    return f'{type(obj).__name__}(', ')'
 
 if __name__ == '__main__':
     from dataclasses import dataclass
@@ -60,9 +67,9 @@ if __name__ == '__main__':
     @dataclass
     class Coords:
         my_points: list
-        my_kwargs: dict
+        my_dict: dict
 
-    coords = Coords([Point(1, 2), Point(3, 4)], {"a": 1, "b": 2})
+    coords = Coords([Point(1, 2), Point(3, 4)], {"a": (1, 2), (1, 2): "a"})
 
     pretty_print(coords)
 
@@ -77,8 +84,14 @@ if __name__ == '__main__':
     #             y=4,
     #         ),
     #     ],
-    #     my_kwargs={
-    #         "a": 1,
-    #         "b": 2,
+    #     my_dict={
+    #         "a": (
+    #             1,
+    #             2,
+    #         ),
+    #         (
+    #             1,
+    #             2,
+    #         ): "a",
     #     },
     # )
