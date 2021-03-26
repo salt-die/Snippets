@@ -9,10 +9,11 @@ def nested_stringify(obj, indent=4, _indents=0):
     if not isinstance(obj, NESTED_TYPES) and not is_dataclass(obj):
         return stringify(obj)
 
+    this_indent = _leading_spaces(indent, _indents)
     next_indent = _leading_spaces(indent, _indents + 1)
 
     if is_dataclass(obj):
-        start, end = type(obj).__name__ + '(', ')'
+        start, end = type(obj).__name__ + '(', this_indent + ')'
 
         middle = '\n'.join(
             f'{next_indent}{field.name}='
@@ -20,7 +21,7 @@ def nested_stringify(obj, indent=4, _indents=0):
         )
 
     elif isinstance(obj, dict):
-        start, end = '{}'
+        start, end = '{', this_indent + '}'
 
         middle = '\n'.join(
             f'{next_indent}{nested_stringify(key, indent, _indents + 1)}: '
@@ -29,21 +30,15 @@ def nested_stringify(obj, indent=4, _indents=0):
 
     else:
         if isinstance(obj, list):
-            start, end = '[]'
+            start, end = '[', this_indent + ']'
         else:  # is tuple
-            start, end = '()'
+            start, end = '(', this_indent + ')'
 
         middle = '\n'.join(
             f'{next_indent}{nested_stringify(item, indent, _indents + 1)},' for item in obj
         )
 
-    return '\n'.join(
-        (
-            start,
-            middle,
-            f'{_leading_spaces(indent, _indents)}{end}'
-        )
-    )
+    return '\n'.join((start, middle, end))
 
 def stringify(obj):
     if isinstance(obj, str):
