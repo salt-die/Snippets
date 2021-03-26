@@ -10,7 +10,7 @@ def pretty_print(obj, indent=4):
 
 def stringify(obj, indent=4, _indents=0):
     if isinstance(obj, str):
-        return f'"{obj}"'
+        return f"'{obj}'"
 
     if not is_dataclass(obj) and not isinstance(obj, (Mapping, Iterable)):
         return str(obj)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         my_points: list
         my_dict: dict
 
-    coords = Coords([Point(1, 2), Point(3, 4)], {"a": (1, 2), (1, 2): "a"})
+    coords = Coords([Point(1, 2), Point(3, 4)], {'a': (1, 2), (1, 2): 'a'})
 
     pretty_print(coords)
 
@@ -75,13 +75,13 @@ if __name__ == '__main__':
     #         ),
     #     ],
     #     my_dict={
-    #         "a": (
+    #         'a': (
     #             1,
     #             2,
     #         ),
     #         (
     #             1,
     #             2,
-    #         ): "a",
+    #         ): 'a',
     #     },
     # )
