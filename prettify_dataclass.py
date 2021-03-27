@@ -15,10 +15,16 @@ def stringify(obj, indent=4, _indents=0):
     if not is_dataclass(obj) and not isinstance(obj, (Mapping, Iterable)):
         return str(obj)
 
-    this_indent = indent * _indents * ' '
-    next_indent = indent * (_indents + 1) * ' '
-    start, end = f'{type(obj).__name__}(', ')'  # generic start and end -- dicts, lists, and tuples will re-assign this
+    if isinstance(obj, dict):
+        start, end = '{}'
+    elif isinstance(obj, list):
+        start, end = '[]'
+    elif isinstance(obj, tuple):
+        start, end = '()'
+    else:
+        start, end = f'{type(obj).__name__}(', ')'
 
+    next_indent = indent * (_indents + 1) * ' '
     if is_dataclass(obj):
         body = '\n'.join(
             f'{next_indent}{field.name}='
@@ -26,24 +32,17 @@ def stringify(obj, indent=4, _indents=0):
         )
 
     elif isinstance(obj, Mapping):
-        if isinstance(obj, dict):
-            start, end = '{}'
-
         body = '\n'.join(
             f'{next_indent}{stringify(key, indent, _indents + 1)}: '
             f'{stringify(value, indent, _indents + 1)},' for key, value in obj.items()
         )
 
     else:  # is Iterable
-        if isinstance(obj, list):
-            start, end = '[]'
-        elif isinstance(obj, tuple):
-            start = '('
-
         body = '\n'.join(
             f'{next_indent}{stringify(item, indent, _indents + 1)},' for item in obj
         )
 
+    this_indent = indent * _indents * ' '
     return f'{start}\n{body}\n{this_indent}{end}'
 
 if __name__ == '__main__':
