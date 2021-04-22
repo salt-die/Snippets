@@ -1,11 +1,9 @@
 """
-Often I generate a large number of numbered pngs, e.g., 000.png, 001.png...,
-that I want to stitch together into an animated gif.  This code does that.
+To stitch `png`s into an animated gif (assumes pngs should be ordered by name):
 """
-import os
 import imageio
+from pathlib import Path
 
-png_dir = 'your png directory'
-images = [imageio.imread(os.path.join(png_dir, file_name))
-          for file_name in sorted(os.listdir(png_dir)) if file_name.endswith('.png')]
-imageio.mimsave(png_dir + 'title.gif', images, duration = .1)
+png_dir = Path('your png directory')
+images = [imageio.imread(png_dir / file_name) for file_name in sorted(png_dir.iterdir()) if file_name.suffix == '.png']
+imageio.mimsave(png_dir / 'title.gif', images, duration = .1)
