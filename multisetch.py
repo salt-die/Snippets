@@ -2,8 +2,6 @@
 Setch is a portmanteau of set and choice.  A setch is set-like object (containment is O(1)) except
 one can pick items at random from the set without converting it to a list. This is a multiset
 implementation of a setch.
-
-Note most list operations are O(1) except for indexing in `remove`.
 """
 from collections import defaultdict
 from random import choice
