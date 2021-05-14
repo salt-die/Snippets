@@ -1,6 +1,7 @@
-"""Conveyerbelt-like operations with deques and callables."""
-
+"""Conveyerbelt-like operations with deques and callables.
+"""
 from collections import deque
+
 
 class Deque(deque):
     def __rshift__(self, other):
