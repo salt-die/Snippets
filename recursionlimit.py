@@ -8,7 +8,9 @@ import sys
 def recursion_limit(limit):
     old_limit = sys.getrecursionlimit()
 
+    sys.setrecursionlimit(limit)
+
     try:
-        sys.setrecursionlimit(limit)
+        yield
     finally:
         sys.setrecursionlimit(old_limit)
